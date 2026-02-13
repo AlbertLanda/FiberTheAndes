@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - Fiber the Andes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <img src="img/LOGO FTA.png" alt="Fiber the Andes" class="logo-main">
+        </div>
+        
+        <nav>
+            <ul>
+                <li><a href="index.html">INICIO</a></li>
+                <li><a href="quienes-somos.html">SOBRE NOSOTROS</a></li>
+                <li><a href="servicios.html">SERVICIOS</a></li>
+                <li><a href="contacto.html" style="color: #009FE3;">CONTÁCTANOS</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <img src="img/ICONO CALL CENTER.png" alt="Teléfono" class="icon-call">
+            <div class="contact-text">
+                <span class="label">Call Center</span>
+                <span class="number">01 7410392</span>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero hero-static" style="background-image: url('img/Fondoincio.png'); height: 50vh; min-height: 400px;">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <span class="blue-tag">Atención al Cliente</span>
+            <h1 style="margin-top: 20px;">ESTAMOS LISTOS<br><span>PARA AYUDARTE</span></h1>
+            <p style="font-size: 18px; max-width: 800px; margin: 20px auto;">Nuestro equipo comercial y técnico está a tu disposición para potenciar tu empresa.</p>
+        </div>
+    </section>
+
+    <section class="contact-visual-section">
+        <div class="main-contact-container">
+            
+            <div class="contact-split-layout">
+                
+                <div class="info-side">
+                    <h2 class="contact-heading">Contáctanos</h2>
+                    <div class="black-underline"></div>
+                    
+                    <ul class="contact-list-clean">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i> 
+                            Alberto del campo 411, Magdalena del Mar
+                        </li>
+                        <li>
+                            <i class="fas fa-globe"></i> 
+                            fibertheandes.com
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i> 
+                            comercial@fibertheandes.com
+                        </li>
+                    </ul>
+
+                    <div class="black-phone-box">
+                        <div class="phone-row">
+                            <i class="fas fa-phone-alt"></i> <span>01 7410392</span>
+                        </div>
+                        <div class="phone-row">
+                            <i class="fas fa-mobile-alt"></i> <span>934046181</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="map-side">
+                    <img src="img/mapa-peru.png" alt="Mapa Cobertura" class="map-img">
+                </div>
+            </div>
+
+            <div class="form-gray-container">
+                <h3>Déjanos tus datos</h3>
+                <p>para ponernos en contacto contigo</p>
+
+                <form id="my-form" action="https://formspree.io/f/mojneoba" method="POST" class="clean-line-form">
+                    
+                    <div class="input-line-group">
+                        <input type="text" name="nombre" placeholder="Nombre" required>
+                    </div>
+                    
+                    <div class="input-line-group">
+                        <input type="tel" name="telefono" placeholder="Teléfono" required>
+                    </div>
+                    
+                    <div class="input-line-group">
+                        <input type="email" name="email" placeholder="Correo" required>
+                    </div>
+                    
+                    <input type="hidden" name="_subject" value="Nuevo contacto desde la web Fiber the Andes">
+
+                    <div class="btn-center">
+                        <button id="my-form-button" type="submit" class="btn-black-send">Enviar</button>
+                    </div>
+
+                    <p id="my-form-status" style="text-align: center; margin-top: 20px; font-weight: bold;"></p>
+                </form>
+            </div>
+
+        </div>
+    </section>
+
+    <footer id="contacto-footer">
+        <div class="footer-container">
+            <div class="footer-column brand-info">
+                <img src="img/LOGO FTA.png" alt="Fiber the Andes" class="footer-logo">
+                <div class="social-icons">
+                    <img src="img/ICONOS RS.png" alt="Redes Sociales" class="rs-group">
+                </div>
+            </div>
+            <div class="footer-column navigation">
+                <ul>
+                    <li><a href="index.html">INICIO</a></li>
+                    <li><a href="quienes-somos.html">SOBRE NOSOTROS</a></li>
+                    <li><a href="servicios.html">SERVICIOS</a></li>
+                    <li><a href="contacto.html">CONTÁCTANOS</a></li>
+                </ul>
+            </div>
+            <div class="footer-column contact-details">
+                <div class="contact-item">
+                    <img src="img/ICONO TEL.png" alt=""> <span>01 7410392</span>
+                </div>
+                <div class="contact-item">
+                    <img src="img/ICONO CEL.png" alt=""> <span>0934046181</span>
+                </div>
+                <div class="contact-item">
+                    <img src="img/ICONO UBI.png" alt=""> <span>Alberto del campo 411, Magdalena del Mar</span>
+                </div>
+                <div class="contact-item">
+                    <img src="img/ICONO CORREO.png" alt=""> <span>comercial@fibertheandes.com</span>
+                </div>
+                <div class="contact-item">
+                    <img src="img/ICONO WEB.png" alt=""> <span>fibertheandes.com</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/51934046181" target="_blank" class="whatsapp-float" aria-label="Contactar por WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        var form = document.getElementById("my-form");
+        
+        async function handleSubmit(event) {
+            event.preventDefault(); // Evita que la página se recargue o redireccione
+            var status = document.getElementById("my-form-status");
+            var btn = document.getElementById("my-form-button");
+            var data = new FormData(event.target);
+
+            // Efecto visual en el botón
+            btn.innerHTML = "Enviando...";
+            btn.disabled = true;
+
+            fetch(event.target.action, {
+                method: form.method,
+                body: data,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    // ÉXITO: Mensaje verde y limpiar campos
+                    status.innerHTML = "¡Gracias! Tu mensaje ha sido enviado correctamente.";
+                    status.style.color = "#009FE3"; // Azul de la marca
+                    form.reset(); // Borra lo que escribió el usuario
+                    btn.innerHTML = "Enviar";
+                    btn.disabled = false;
+                } else {
+                    // ERROR: Mensaje rojo
+                    response.json().then(data => {
+                        if (Object.hasOwn(data, 'errors')) {
+                            status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
+                        } else {
+                            status.innerHTML = "Hubo un problema al enviar el formulario.";
+                        }
+                        status.style.color = "red";
+                        btn.innerHTML = "Enviar";
+                        btn.disabled = false;
+                    })
+                }
+            }).catch(error => {
+                status.innerHTML = "Hubo un problema al enviar el formulario.";
+                status.style.color = "red";
+                btn.innerHTML = "Enviar";
+                btn.disabled = false;
+            });
+        }
+        form.addEventListener("submit", handleSubmit);
+    </script>
+
+</body>
+</html>
