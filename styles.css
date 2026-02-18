@@ -102,10 +102,9 @@ nav a {
 
 /* Agrega esto para bajar todo el bloque */
 .hero-content {
-    margin-top: 150px;  /* <--- AUMENTA este número si quieres que baje más */
+    margin-top: 150px;
 }
 
-/* El resto déjalo igual */
 .hero-content h1 {
     font-size: 60px;
     font-weight: 800;
@@ -201,12 +200,24 @@ nav a {
     height: auto;
     display: block;
     box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    /* Animación */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 8px; 
+}
+
+.card-img:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
 .arrow-box {
     display: flex;
     align-items: center;
     padding-left: 10px;
+}
+
+.arrow-box a {
+    display: inline-block;
 }
 
 .arrow-box img {
@@ -355,11 +366,22 @@ nav a {
     margin: 0 auto;
 }
 
+/* Animación Razones */
 .reason-item img {
     width: 100%;
     max-width: 220px;
     display: block;
     margin: 0 auto;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+.reason-item:hover img {
+    transform: translateY(-12px); 
+    box-shadow: 0 20px 40px rgba(0, 159, 227, 0.35); 
+    filter: brightness(1.1); 
 }
 
 /* --- CTA BANNER --- */
@@ -769,7 +791,186 @@ footer {
     line-height: 1.5;
 }
 
-/* --- CONTACT FORM STYLES --- */
+/* =========================================
+   ESTILOS ESPECÍFICOS: CONTACTO (DISEÑO LIMPIO)
+   ========================================= */
+
+.contact-visual-section {
+    background-color: white;
+    padding: 80px 5%;
+    color: #000;
+}
+
+.main-contact-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* --- PARTE SUPERIOR (Info + Mapa) --- */
+.contact-split-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 60px;
+    gap: 50px;
+}
+
+.info-side {
+    flex: 1;
+    padding-top: 20px;
+}
+
+.contact-heading {
+    font-size: 52px;
+    font-weight: 800;
+    color: #020b16;
+    margin-bottom: 15px;
+    text-transform: none;
+}
+
+.black-underline {
+    width: 80px;
+    height: 6px;
+    background-color: #020b16;
+    margin-bottom: 40px;
+}
+
+/* Lista de iconos simple */
+.contact-list-clean {
+    list-style: none;
+    margin-bottom: 40px;
+}
+
+.contact-list-clean li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+}
+
+.contact-list-clean i {
+    width: 25px;
+    margin-right: 10px;
+    color: #000;
+    font-size: 18px;
+    text-align: center;
+}
+
+/* Caja Negra de Teléfonos */
+.black-phone-box {
+    background-color: #020b16;
+    color: white;
+    padding: 35px 30px;
+    width: 100%;
+    max-width: 350px;
+    border-radius: 0;
+}
+
+.phone-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.phone-row:last-child {
+    margin-bottom: 0;
+}
+
+.phone-row i {
+    border: 1px solid white;
+    padding: 8px;
+    border-radius: 4px;
+    margin-right: 15px;
+    font-size: 14px;
+}
+
+/* Mapa */
+.map-side {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.map-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* --- PARTE INFERIOR (Formulario Gris) --- */
+.form-gray-container {
+    background-color: #f2f2f0; 
+    padding: 50px 80px;
+    text-align: left;
+}
+
+.form-gray-container h3 {
+    font-size: 28px;
+    color: #020b16;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.form-gray-container p {
+    color: #777;
+    margin-bottom: 40px;
+    font-size: 16px;
+}
+
+/* Inputs que son solo líneas */
+.clean-line-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.input-line-group input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #aaa;
+    padding: 10px 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    color: #333;
+    outline: none;
+}
+
+.input-line-group input::placeholder {
+    color: #aaa;
+}
+
+.input-line-group input:focus {
+    border-bottom-color: #009FE3;
+}
+
+/* Botón Negro Centrado */
+.btn-center {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-black-send {
+    background-color: #020b16;
+    color: white;
+    border: none;
+    padding: 12px 60px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-black-send:hover {
+    background-color: #009FE3;
+}
+
+/* --- CONTACT FORM WRAPPER (Viejo/Otro estilo) --- */
 .contact-form-wrapper {
     max-width: 800px;
     margin: 0 auto;
@@ -827,35 +1028,120 @@ footer {
     resize: vertical;
 }
 
-/* --- RESPONSIVE MEDIA QUERIES --- */
+/* ==============================================================
+   MEDIA QUERIES - RESPONSIVE (Tablets y Móviles)
+   ============================================================== */
+
+/* --- TABLETS Y LAPTOPS PEQUEÑAS (Max 1024px) --- */
 @media (max-width: 1024px) {
+    
+    /* 1. HEADER & NAV (Menú visible debajo) */
+    header {
+        padding: 15px 20px;
+        flex-wrap: wrap; /* Permite que el menú baje */
+        height: auto;
+    }
+
+    .logo-main {
+        order: 1; 
+        height: 35px;
+    }
+
+    .header-right {
+        order: 2; /* Teléfono a la derecha */
+    }
+
+    nav { 
+        display: block !important; /* Forzamos que se vea */
+        width: 100%;
+        order: 3;          /* Baja a la siguiente fila */
+        margin-top: 15px;
+        border-top: 1px solid #222;
+        padding-top: 15px;
+    }
+    
+    nav ul {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px 20px;
+    }
+
+    nav a {
+        font-size: 12px;
+    }
+
+    /* Ajuste para que el menú no tape el título principal */
+    .hero-content {
+        margin-top: 180px; 
+    }
+
+    /* 2. SERVICIOS HORIZONTAL */
     .services-container {
         flex-direction: column;
         align-items: center;
+        gap: 40px;
     }
+
+    .title-box {
+        width: 100%;
+        max-width: 500px;
+        text-align: center;
+        justify-content: center;
+        padding: 30px;
+    }
+    
+    .title-box span { 
+        display: inline; 
+        margin-left: 5px; 
+    }
+
     .cards-row {
         flex-wrap: wrap;
         justify-content: center;
+        gap: 30px;
     }
-    .title-box {
-        width: 100%;
+
+    /* 3. ABOUT US */
+    .about-container {
+        flex-direction: column;
+        gap: 60px;
         text-align: center;
-        padding: 20px;
     }
-    .title-box span { display: inline; margin-left: 5px; }
-    
-    .about-container { flex-direction: column; gap: 60px; }
-    .experience-badge { left: 0; bottom: -20px; padding: 15px 20px; }
-    .about-title { font-size: 32px; }
 
-    .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
-    
-    .cta-content h2 { font-size: 28px; }
-    .btn-cta { padding: 12px 35px; }
+    .about-info {
+        text-align: center;
+    }
 
-    nav { display: none; }
+    .experience-badge {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        right: auto;
+        margin: -25px auto 0 auto;
+        width: fit-content;
+        transform: none;
+        padding: 15px 25px;
+    }
+
+    .about-title {
+        font-size: 32px;
+    }
+
+    /* 4. GRILLAS Y OTROS */
+    .grid-4, .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .cta-content h2 { 
+        font-size: 28px; 
+    }
+    .btn-cta { 
+        padding: 12px 35px; 
+    }
 }
 
+/* --- TABLETS VERTICALES (Max 900px) --- */
 @media (max-width: 900px) {
     .footer-container {
         flex-direction: column;
@@ -863,274 +1149,154 @@ footer {
         text-align: center;
         gap: 40px;
     }
+
     .navigation, .contact-details {
         align-items: center;
     }
+    
     .contact-item {
         justify-content: center;
     }
 }
 
+/* --- MÓVILES (Max 768px) --- */
 @media (max-width: 768px) {
-    header { padding: 15px 20px; }
-    .hero-content h1 { font-size: 36px; }
-    .slide { width: 150px; padding: 0 10px; }
-    .slide img { max-height: 60px; }
-    .slide-track { width: calc(150px * 38); animation: scroll-mobile 25s linear infinite; }
-    .whatsapp-float { width: 50px; height: 50px; bottom: 20px; right: 20px; font-size: 28px; }
-    .grid-4, .grid-3 { grid-template-columns: 1fr; }
-    .form-row { flex-direction: column; gap: 0; }
-    .contact-form-wrapper { padding: 30px 20px; }
-}
-
-@keyframes scroll-mobile {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-150px * 19)); }
-}
-
-/* --- Animación para las cartillas de servicios en el inicio --- */
-.card-img {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    /* Asegura que la imagen sea un bloque para que la sombra funcione bien */
-    display: block; 
-    /* Redondea un poco las esquinas si quieres */
-    border-radius: 8px; 
-}
-
-.card-img:hover {
-    /* Levanta la tarjeta 10px */
-    transform: translateY(-10px);
-    /* Añade una sombra suave */
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-}
-
-/* --- Estilo para la flecha con enlace --- */
-.arrow-box a {
-    display: inline-block; /* Permite que la transformación funcione */
-}
-
-.arrow-box img {
-    cursor: pointer; /* Cambia el cursor a manito */
-    transition: transform 0.3s ease;
-}
-
-.arrow-box a:hover img {
-    /* Mueve la flecha 10px a la derecha */
-    transform: translateX(10px);
-}
-
-/* --- ANIMACIÓN SECCIÓN: ¿POR QUÉ ELEGIRNOS? --- */
-
-/* Estado inicial de las cajas (imágenes) */
-.reason-item img {
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Animación muy fluida */
-    border-radius: 4px; /* Un borde sutil si la imagen es cuadrada */
-    /* Aseguramos que la imagen respete el contenedor */
-    display: block;
-    position: relative;
-    z-index: 1;
-}
-
-/* Efecto al pasar el mouse (Hover) */
-.reason-item:hover img {
-    /* 1. Se eleva hacia arriba */
-    transform: translateY(-12px); 
     
-    /* 2. Resplandor azul intenso detrás (Color de tu marca #009FE3) */
-    box-shadow: 0 20px 40px rgba(0, 159, 227, 0.35); 
+    /* 1. HEADER (Ajustes extra para móvil) */
+    .contact-text {
+        display: none; /* Oculta texto "Llámanos" para limpiar espacio */
+    }
+
+    .hero-content h1 { 
+        font-size: 36px; 
+        line-height: 1.2;
+    }
+
+    /* 2. SECCIONES GENERALES */
+    .services-horizontal {
+        padding: 0 20px 60px 20px;
+    }
+
+    .card-img {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .about-light {
+        padding: 60px 20px;
+    }
+    .main-img {
+        width: 100%;
+    }
+
+    .reasons {
+        padding: 60px 20px;
+    }
+
+    .section-title {
+        font-size: 28px;
+        margin-bottom: 40px;
+    }
+
+    /* Todo a 1 columna */
+    .grid-4, .grid-3 { 
+        grid-template-columns: 1fr; 
+    }
     
-    /* 3. Un ligero brillo extra a la imagen */
-    filter: brightness(1.1); 
-}
+    .value-card, .stat-card {
+        max-width: 400px;
+        margin: 0 auto;
+    }
 
-/* =========================================
-   ESTILOS ESPECÍFICOS: CONTACTO (DISEÑO LIMPIO)
-   ========================================= */
+    .cta-banner {
+        padding: 80px 20px;
+    }
+    .btn-cta {
+        width: 100%;
+        padding: 15px 0;
+    }
 
-.contact-visual-section {
-    background-color: white;
-    padding: 80px 5%;
-    color: #000;
-}
+    /* 3. CONTACTO */
+    .contact-visual-section {
+        padding: 50px 20px;
+    }
 
-.main-contact-container {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-/* --- PARTE SUPERIOR (Info + Mapa) --- */
-.contact-split-layout {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 60px;
-    gap: 50px;
-}
-
-.info-side {
-    flex: 1;
-    padding-top: 20px;
-}
-
-.contact-heading {
-    font-size: 52px;
-    font-weight: 800;
-    color: #020b16;
-    margin-bottom: 15px;
-    text-transform: none; /* Como en la imagen, mayúscula solo la primera */
-}
-
-.black-underline {
-    width: 80px;
-    height: 6px;
-    background-color: #020b16;
-    margin-bottom: 40px;
-}
-
-/* Lista de iconos simple */
-.contact-list-clean {
-    list-style: none;
-    margin-bottom: 40px;
-}
-
-.contact-list-clean li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    font-size: 15px;
-    font-weight: 500;
-    color: #333;
-}
-
-.contact-list-clean i {
-    width: 25px;
-    margin-right: 10px;
-    color: #000;
-    font-size: 18px;
-    text-align: center;
-}
-
-/* Caja Negra de Teléfonos */
-.black-phone-box {
-    background-color: #020b16;
-    color: white;
-    padding: 35px 30px;
-    width: 100%;
-    max-width: 350px;
-    border-radius: 0; /* Cuadrado como en la imagen */
-}
-
-.phone-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    font-size: 18px;
-    font-weight: 500;
-}
-
-.phone-row:last-child {
-    margin-bottom: 0;
-}
-
-.phone-row i {
-    border: 1px solid white;
-    padding: 8px;
-    border-radius: 4px;
-    margin-right: 15px;
-    font-size: 14px;
-}
-
-/* Mapa */
-.map-side {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.map-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
-
-/* --- PARTE INFERIOR (Formulario Gris) --- */
-.form-gray-container {
-    background-color: #f2f2f0; /* Color gris suave de la imagen */
-    padding: 50px 80px;
-    text-align: left;
-}
-
-.form-gray-container h3 {
-    font-size: 28px;
-    color: #020b16;
-    margin-bottom: 5px;
-    font-weight: 700;
-}
-
-.form-gray-container p {
-    color: #777;
-    margin-bottom: 40px;
-    font-size: 16px;
-}
-
-/* Inputs que son solo líneas */
-.clean-line-form {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
-
-.input-line-group input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #aaa; /* Línea gris oscura */
-    padding: 10px 0;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 16px;
-    color: #333;
-    outline: none;
-}
-
-.input-line-group input::placeholder {
-    color: #aaa;
-}
-
-.input-line-group input:focus {
-    border-bottom-color: #009FE3; /* Azul al escribir */
-}
-
-/* Botón Negro Centrado */
-.btn-center {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.btn-black-send {
-    background-color: #020b16;
-    color: white;
-    border: none;
-    padding: 12px 60px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.btn-black-send:hover {
-    background-color: #009FE3;
-}
-
-/* Ajustes Responsive */
-@media (max-width: 768px) {
     .contact-split-layout {
         flex-direction: column;
+        gap: 40px;
     }
+
+    .contact-heading {
+        font-size: 34px;
+    }
+
     .form-gray-container {
         padding: 40px 20px;
     }
+
+    .clean-line-form {
+        gap: 20px;
+    }
+
     .black-phone-box {
+        width: 100%;
         max-width: 100%;
     }
+
+    /* Compatibilidad con formulario antiguo si existe */
+    .form-row { 
+        flex-direction: column; 
+        gap: 0; 
+    }
+    .contact-form-wrapper { 
+        padding: 30px 20px; 
+    }
+
+    /* 4. FOOTER & EXTRAS */
+    footer {
+        padding: 40px 20px;
+    }
+    
+    .whatsapp-float { 
+        width: 50px; 
+        height: 50px; 
+        bottom: 20px; 
+        right: 20px; 
+        font-size: 28px; 
+    }
+
+    /* Ajuste Carrusel Móvil */
+    .slide { 
+        width: 150px; 
+        padding: 0 10px; 
+    }
+    .slide img { 
+        max-height: 60px; 
+    }
+    .slide-track { 
+        width: calc(150px * 38); 
+        animation: scroll-mobile 25s linear infinite; 
+    }
+}
+
+/* --- MÓVILES MUY PEQUEÑOS (Max 380px) --- */
+@media (max-width: 380px) {
+    .hero-content h1 {
+        font-size: 28px;
+    }
+    
+    .intro-light {
+        font-size: 18px;
+        padding: 60px 20px;
+    }
+    
+    .title-box span {
+        font-size: 32px;
+    }
+}
+
+/* Animación Específica Móvil */
+@keyframes scroll-mobile {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-150px * 19)); }
 }
