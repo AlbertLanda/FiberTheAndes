@@ -26,7 +26,7 @@ header {
 }
 
 .logo-main {
-    height: 60px;
+    height: 40px;
 }
 
 nav ul {
@@ -61,9 +61,13 @@ nav a {
 }
 
 .contact-text .number {
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 600;
     color: #fff;
+}
+
+.icon-call {
+    height: 60px;
 }
 
 /* --- HERO SECTION --- */
