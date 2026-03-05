@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="img/FTB.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="img/FTB.ico">
     <title>Contacto - Fiber the Andes</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300;1,400&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
 
     <header>
         <div class="header-left">
             <img src="img/LOGO FTA.png" alt="Fiber the Andes" class="logo-main">
         </div>
-        
+
         <nav>
             <ul>
                 <li><a href="index.html">INICIO</a></li>
@@ -33,35 +39,37 @@
         </div>
     </header>
 
-    <section class="hero hero-static" style="background-image: url('img/Fondoincio.png'); height: 50vh; min-height: 550px;">
+    <section class="hero hero-static"
+        style="background-image: url('img/Fondoincio.png'); height: 50vh; min-height: 550px;">
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1 style="margin-top: 20px;">ESTAMOS LISTOS<br><span>PARA AYUDARTE</span></h1>
-            <p style="font-size: 18px; max-width: 800px; margin: 20px auto;">Nuestro equipo comercial y técnico está a tu disposición para potenciar tu empresa.</p>
+            <p style="font-size: 18px; max-width: 800px; margin: 20px auto;">Nuestro equipo comercial y técnico está a
+                tu disposición para potenciar tu empresa.</p>
             <span class="blue-tag">Atención al Cliente</span>
         </div>
     </section>
 
     <section class="contact-visual-section">
         <div class="main-contact-container">
-            
+
             <div class="contact-split-layout">
-                
+
                 <div class="info-side">
                     <h2 class="contact-heading">Contáctanos</h2>
                     <div class="black-underline"></div>
-                    
+
                     <ul class="contact-list-clean">
                         <li>
-                            <i class="fas fa-map-marker-alt"></i> 
+                            <i class="fas fa-map-marker-alt"></i>
                             Alberto del campo 411 - Piso 10, Magdalena del Mar
                         </li>
                         <li>
-                            <i class="fas fa-globe"></i> 
+                            <i class="fas fa-globe"></i>
                             fibertheandes.com
                         </li>
                         <li>
-                            <i class="fas fa-envelope"></i> 
+                            <i class="fas fa-envelope"></i>
                             comercial@fibertheandes.com
                         </li>
                     </ul>
@@ -85,20 +93,20 @@
                 <h3>Déjanos tus datos</h3>
                 <p>para ponernos en contacto contigo</p>
 
-               <form id="my-form" action="https://formspree.io/f/mpqjvkbw" method="POST" class="clean-line-form">
-                    
+                <form id="my-form" action="https://formspree.io/f/mpqjvkbw" method="POST" class="clean-line-form">
+
                     <div class="input-line-group">
                         <input type="text" name="nombre" placeholder="Nombre" required>
                     </div>
-                    
+
                     <div class="input-line-group">
                         <input type="tel" name="telefono" placeholder="Teléfono" required>
                     </div>
-                    
+
                     <div class="input-line-group">
                         <input type="email" name="email" placeholder="Correo" required>
                     </div>
-                    
+
                     <input type="hidden" name="_subject" value="Nuevo contacto desde la web Fiber the Andes">
 
                     <div class="btn-center">
@@ -158,7 +166,7 @@
 
     <script>
         var form = document.getElementById("my-form");
-        
+
         async function handleSubmit(event) {
             event.preventDefault(); // Evita que la página se recargue o redireccione
             var status = document.getElementById("my-form-status");
@@ -207,4 +215,5 @@
     </script>
 
 </body>
+
 </html>
