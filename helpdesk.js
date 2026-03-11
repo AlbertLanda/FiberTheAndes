@@ -183,7 +183,18 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
         const checkCacheOrFallback = (userTxt) => {
             const lowerTxt = userTxt.toLowerCase().trim();
             if (aiCache[lowerTxt]) {
-                return aiCache[lowerTxt] + "\n\n*(Respuesta recuperada del caché ya que los servidores están ocupados)*";
+                const cachedRes = aiCache[lowerTxt];
+                if (!cachedRes.includes('```ticket_data')) {
+                    return cachedRes;
+                }
+            }
+            
+            // Handle greetings
+            const greetings = ['hola', 'ola', 'buenos', 'buenas', 'saludos', 'hey', 'q tal'];
+            const isGreeting = greetings.some(g => lowerTxt.includes(g));
+            
+            if (isGreeting) {
+                return '__SHOW_OPTIONS_GREETING__';
             }
             return '__SHOW_OPTIONS__';
         };
@@ -255,29 +266,35 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
         if (manualStep) {
             showTyping(false);
             let manualData = JSON.parse(sessionStorage.getItem('ftc_manual_data') || '{}');
+            let steps = JSON.parse(sessionStorage.getItem('ftc_manual_ticket_steps') || '[]');
             
-            if (manualStep === 'nombre') {
-                manualData.nombre = userText;
-                sessionStorage.setItem('ftc_manual_data', JSON.stringify(manualData));
-                sessionStorage.setItem('ftc_manual_ticket_mode', 'dni');
-                addMessage(`Gracias ${userText.split(' ')[0]}.\n2. ¿Cuál es tu **DNI o RUC**?`, 'bot');
-            } else if (manualStep === 'dni') {
-                manualData.dni = userText;
-                sessionStorage.setItem('ftc_manual_data', JSON.stringify(manualData));
-                sessionStorage.setItem('ftc_manual_ticket_mode', 'direccion');
-                addMessage(`Perfecto.\n3. ¿Cuál es tu **Dirección exacta** para revisar cobertura técnica?`, 'bot');
-            } else if (manualStep === 'direccion') {
-                manualData.direccion = userText;
-                sessionStorage.setItem('ftc_manual_data', JSON.stringify(manualData));
-                sessionStorage.setItem('ftc_manual_ticket_mode', 'telefono');
-                addMessage(`Anotado.\n4. ¿Cuál es tu **Número de celular o teléfono** de contacto?`, 'bot');
-            } else if (manualStep === 'telefono') {
-                manualData.telefono = userText;
-                sessionStorage.setItem('ftc_manual_data', JSON.stringify(manualData));
-                sessionStorage.setItem('ftc_manual_ticket_mode', 'detalle');
-                addMessage(`Por último.\n5. Por favor **detalla brevemente tu solicitud, problema o sugerencia**:`, 'bot');
-            } else if (manualStep === 'detalle') {
-                manualData.detalle = userText;
+            // Save answer for current step
+            manualData[manualStep] = userText;
+            sessionStorage.setItem('ftc_manual_data', JSON.stringify(manualData));
+            
+            // Remove the current step from the array
+            steps.shift();
+            sessionStorage.setItem('ftc_manual_ticket_steps', JSON.stringify(steps));
+            
+            if (steps.length > 0) {
+                // Ask next step
+                const nextStep = steps[0];
+                sessionStorage.setItem('ftc_manual_ticket_mode', nextStep);
+                
+                const stepQuestions = {
+                    'nombre': "¿Cuál es tu **Nombre completo**?",
+                    'dni': "¿Cuál es tu **DNI o RUC**?",
+                    'direccion': "¿Cuál es tu **Dirección exacta** para revisar cobertura técnica?",
+                    'telefono': "¿Cuál es tu **Número de celular o teléfono** de contacto?",
+                    'detalle': "Por favor **detalla brevemente tu solicitud, problema o sugerencia**:"
+                };
+                
+                const prefixes = ["Perfecto.", "Anotado.", "Gracias.", "Excelente.", "Bien."];
+                const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                addMessage(`${randomPrefix} ${stepQuestions[nextStep]}`, 'bot');
+                
+            } else {
+                // Finished
                 const fallbackTipo = sessionStorage.getItem('ftc_manual_ticket_type') || 'Falla Técnica';
                 
                 const ticketData = {
@@ -286,15 +303,15 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                     timestamp: new Date().toISOString(),
                     data: {
                         tipo: fallbackTipo + " (Manual)",
-                        problema: manualData.detalle,
-                        nombre: manualData.nombre,
-                        dni: manualData.dni,
+                        problema: manualData.detalle || "N/A",
+                        nombre: manualData.nombre || "N/A",
+                        dni: manualData.dni || "N/A",
                         servicio: "No especificado",
                         tiempo: "N/A",
                         conexion: "N/A",
                         reinicio: "N/A",
-                        ubicacion: manualData.direccion,
-                        contacto: manualData.telefono
+                        ubicacion: manualData.direccion || "N/A",
+                        contacto: manualData.telefono || "N/A"
                     },
                     status: 'pendiente'
                 };
@@ -311,8 +328,9 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                 sessionStorage.removeItem('ftc_manual_ticket_mode');
                 sessionStorage.removeItem('ftc_manual_ticket_type');
                 sessionStorage.removeItem('ftc_manual_data');
+                sessionStorage.removeItem('ftc_manual_ticket_steps');
                 
-                addMessage("✅ ¡Completado! He ingresado tus datos y registrado tu caso formalmente en nuestro sistema. Uno de nuestros ingenieros o asesores se contactará contigo a la brevedad.", 'bot');
+                addMessage("✅ ¡Completado! He ingresado tus datos y registrado tu caso formalmente en nuestro panel. Uno de nuestros ingenieros o asesores se contactará contigo a la brevedad.", 'bot');
             }
             
             inputField.disabled = false;
@@ -324,8 +342,10 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
         const botReply = await callGemini(userText);
         showTyping(false);
         
-        if (botReply === '__SHOW_OPTIONS__') {
-            const msg = "Mi sistema de Inteligencia Artificial está en mantenimiento temporal 😅. Pero no te preocupes, **puedo registrar tu solicitud manualmente**.\n\nPor favor, selecciona qué deseas hacer:";
+        if (botReply === '__SHOW_OPTIONS__' || botReply === '__SHOW_OPTIONS_GREETING__') {
+            const msg = botReply === '__SHOW_OPTIONS_GREETING__' 
+                ? "¡Hola! ¿En qué podemos ayudarte hoy? Por favor, selecciona una opción:" 
+                : "Para poder ayudarte mejor, por favor selecciona qué deseas hacer:";
             addMessage(msg, 'bot');
             
             const optionsEl = document.getElementById('helpdesk-options');
@@ -333,6 +353,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                 <button class="fallback-btn" data-type="Falla Técnica" style="flex:1; padding:8px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="fas fa-tools"></i> Falla Técnica</button>
                 <button class="fallback-btn" data-type="Queja Comercial" style="flex:1; padding:8px; background:#f39c12; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="fas fa-angry"></i> Queja</button>
                 <button class="fallback-btn" data-type="Sugerencia" style="flex:1; padding:8px; background:#2ecc71; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="fas fa-lightbulb"></i> Sugerencia</button>
+                <button class="fallback-btn" data-type="Info" style="width:100%; margin-top:5px; padding:8px; background:#34495e; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="fas fa-info-circle"></i> Saber más sobre Fiber The Andes</button>
             `;
             optionsEl.classList.remove('hidden');
             
@@ -340,13 +361,31 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                 btn.addEventListener('click', (e) => {
                     const tipo = e.target.closest('button').getAttribute('data-type');
                     optionsEl.classList.add('hidden');
-                    // Initiate step-by-step
-                    sessionStorage.setItem('ftc_manual_ticket_mode', 'nombre');
+                    
+                    if (tipo === 'Info') {
+                        addMessage('Saber más sobre Fiber The Andes', 'user');
+                        addMessage('Somos Fiber The Andes, una empresa peruana de Internet Corporativo 100% dedicado. Brindamos servicio a clientes empresariales e instituciones en la sierra central y Lima. Nuestra central nacional es el **01 7410392**. También atendemos vía WhatsApp o Correo. ¿Deseas generar algún ticket?', 'bot');
+                        return;
+                    }
+                    
+                    // Shuffle form questions
+                    const steps = ['nombre', 'dni', 'direccion', 'telefono', 'detalle'].sort(() => Math.random() - 0.5);
+                    sessionStorage.setItem('ftc_manual_ticket_steps', JSON.stringify(steps));
+                    sessionStorage.setItem('ftc_manual_ticket_mode', steps[0]);
                     sessionStorage.setItem('ftc_manual_ticket_type', tipo);
                     sessionStorage.setItem('ftc_manual_data', JSON.stringify({}));
                     
                     addMessage(tipo, 'user');
-                    addMessage(`Has seleccionado **${tipo}**.\nCrearemos tu reporte paso a paso.\n\n1. Para empezar, ¿Cuál es tu **Nombre completo**?`, 'bot');
+                    addMessage(`Has seleccionado **${tipo}**.\nCrearemos tu reporte paso a paso.`, 'bot');
+                    
+                    const stepQuestions = {
+                        'nombre': "¿Cuál es tu **Nombre completo**?",
+                        'dni': "¿Cuál es tu **DNI o RUC**?",
+                        'direccion': "¿Cuál es tu **Dirección exacta** para revisar cobertura técnica?",
+                        'telefono': "¿Cuál es tu **Número de celular o teléfono** de contacto?",
+                        'detalle': "Por favor **detalla brevemente tu solicitud, problema o sugerencia**:"
+                    };
+                    addMessage(`Para empezar, ${stepQuestions[steps[0]]}`, 'bot');
                 });
             });
         } else {
