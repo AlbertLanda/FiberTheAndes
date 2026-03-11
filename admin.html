@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Helpdesk</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Login Container -->
+    <div id="login-container" class="admin-container">
+        <div class="login-box">
+            <img src="img/LOGO FTA.png" alt="Fiber the Andes" class="admin-logo">
+            <h2>Acceso a Sistema de Quejas</h2>
+            <form id="admin-login-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="admin-user" placeholder="Usuario" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="admin-pass" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="btn-login">Ingresar</button>
+                <p id="login-error" class="error-msg"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Container (Hidden by default) -->
+    <div id="dashboard-container" class="admin-container hidden">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <img src="img/LOGO FTA.png" alt="Fiber the Andes" class="dashboard-logo">
+                <h2>Panel de Quejas</h2>
+            </div>
+            <button id="btn-logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Salir</button>
+        </header>
+
+        <main class="dashboard-content">
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <div>
+                        <h3 id="total-tickets">0</h3>
+                        <p>Total de Tickets</p>
+                    </div>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid #f39c12;">
+                    <i class="fas fa-clock" style="color: #f39c12;"></i>
+                    <div>
+                        <h3 id="pending-complaints">0</h3>
+                        <p>Pendientes</p>
+                    </div>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid #2ecc71;">
+                    <i class="fas fa-check-circle" style="color: #2ecc71;"></i>
+                    <div>
+                        <h3 id="resolved-complaints">0</h3>
+                        <p>Resueltos</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Bandeja Principal (Fallas y Quejas) -->
+                <div class="tickets-section main-inbox">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Bandeja de Entrada (Fallas / Quejas)</h3>
+                        <div class="filters">
+                            <select id="filter-status" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd; margin-right: 10px;">
+                                <option value="all">Todos los estados</option>
+                                <option value="pendiente">Pendientes / Atrasados</option>
+                                <option value="proceso">En Proceso</option>
+                                <option value="resuelto">Resueltos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="tickets-list" id="tickets-list">
+                        <!-- Las fallas/quejas se cargarán aquí por JS -->
+                        <p class="empty-state">No hay tickets registrados aún.</p>
+                    </div>
+                </div>
+
+                <!-- Barra lateral de Sugerencias -->
+                <div class="suggestions-sidebar">
+                    <h3 style="margin-top: 0; color: #2ecc71; border-bottom: 2px solid #2ecc71; padding-bottom: 10px;"><i class="fas fa-lightbulb"></i> Buzón de Sugerencias</h3>
+                    <div class="tickets-list" id="suggestions-list">
+                        <!-- Las sugerencias se cargarán aquí por JS -->
+                        <p class="empty-state">No hay sugerencias recientes.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>

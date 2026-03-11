@@ -1,0 +1,156 @@
+#helpdesk-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 80px; /* Para no solaparse con el botón de WhatsApp */
+    width: 350px;
+    background: #fff;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    font-family: 'Montserrat', sans-serif;
+    z-index: 9999;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#helpdesk-widget.helpdesk-closed {
+    height: 50px;
+}
+
+#helpdesk-widget:not(.helpdesk-closed) {
+    height: 450px;
+}
+
+#helpdesk-header {
+    background: #009FE3;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#helpdesk-header button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#helpdesk-body {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 50px);
+}
+
+#helpdesk-messages {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.helpdesk-message {
+    padding: 10px 15px;
+    border-radius: 20px;
+    max-width: 85%;
+    word-wrap: break-word;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.helpdesk-message.user {
+    background: #009FE3;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 5px;
+}
+
+.helpdesk-message.bot {
+    background: #e1e1e1;
+    color: #333;
+    align-self: flex-start;
+    border-bottom-left-radius: 5px;
+}
+
+#helpdesk-input-area {
+    display: flex;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #eee;
+}
+
+#helpdesk-input {
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 8px 15px;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+#helpdesk-send {
+    background: #009FE3;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    margin-left: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+#helpdesk-send:hover {
+    background: #007bb5;
+}
+
+@media (max-width: 480px) {
+    #helpdesk-widget {
+        right: 10px;
+        bottom: 70px; /* encima de whatsapp en móviles */
+        width: calc(100% - 20px);
+    }
+}
+
+/* Typing indicator */
+.helpdesk-typing {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 15px;
+    background: #f9f9f9;
+}
+
+.helpdesk-typing.hidden {
+    display: none;
+}
+
+.helpdesk-typing span {
+    width: 8px;
+    height: 8px;
+    background: #009FE3;
+    border-radius: 50%;
+    display: inline-block;
+    animation: typing-bounce 1.2s infinite ease-in-out;
+}
+
+.helpdesk-typing span:nth-child(2) { animation-delay: 0.2s; }
+.helpdesk-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-6px); opacity: 1; }
+}
+
