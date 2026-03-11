@@ -145,17 +145,17 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
     };
 
     // ============================================================
-    //  LLAMAR A GEMINI
+    //  LLAMAR AL BACKEND (NODE.JS) EN VEZ DE A GEMINI DIRECTO
     // ============================================================
     let aiCache = JSON.parse(localStorage.getItem('ftc_ai_cache')) || {};
 
     const callGemini = async (userText) => {
-        history.push({ role: 'user', parts: [{ text: userText }] });
+        // En lugar de llamar a la URL de Google, llamamos a nuestro propio servidor local
+        const BACKEND_URL = 'http://localhost:3000/api/chat';
 
         const body = {
-            system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-            contents: history,
-            generationConfig: { temperature: 0.7, maxOutputTokens: 500 }
+            messages: history, // Enviamos el historial completo para que el backend lo organice
+            userText: userText
         };
 
         const checkCacheOrFallback = (userTxt) => {
@@ -171,7 +171,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
         };
 
         try {
-            const res = await fetch(GEMINI_URL, {
+            const res = await fetch(BACKEND_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
@@ -192,10 +192,10 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
             }
 
             const json = await res.json();
-            const rawText = json?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+            const rawText = json.text || null;
 
             if (!rawText) {
-                console.error('Respuesta vacía de Gemini:', JSON.stringify(json));
+                console.error('Respuesta vacía del servidor:', JSON.stringify(json));
                 history.pop();
                 return 'El asistente no respondió. Por favor intenta de nuevo.';
             }

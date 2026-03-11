@@ -91,8 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.getElementById('pending-complaints')) document.getElementById('pending-complaints').textContent = pendingCount;
 
             // Aplicar filtros a la bandeja principal
-            const statusVal = filterStatus.value.toLowerCase();
-            const typeVal = filterType.value.toLowerCase();
+            const statusVal = filterStatus ? filterStatus.value.toLowerCase() : 'all';
+            const typeVal = filterType ? filterType.value.toLowerCase() : 'all';
 
             let inboxTickets = tickets.filter(t => !(t.data.tipo || '').toLowerCase().includes('sugerencia'));
             let suggestionTickets = tickets.filter(t => (t.data.tipo || '').toLowerCase().includes('sugerencia'));
