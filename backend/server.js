@@ -111,12 +111,16 @@ app.post('/chat-handler', async (req, res) => {
     } catch (error) {
         console.error('Error in /api/chat:', error);
         
-        // Handle specific Gemini quota errors via their generic codes if mapped
-        if (error.message && (error.message.includes('429') || error.message.includes('quota') || error.message.includes('exhausted'))) {
+        // Handle specific Gemini quota errors or blocked keys
+        const msg = error.message ? error.message.toLowerCase() : '';
+        if (msg.includes('429') || msg.includes('quota') || msg.includes('exhausted')) {
             return res.status(429).json({ error: 'Quota exceeded', message: 'Servidor ocupado' });
         }
-        if (error.message && error.message.includes('API key not valid')) {
-            return res.status(400).json({ error: 'Invalid API Key', message: 'Key bloqueada o inválida' });
+        if (msg.includes('api key not valid') || msg.includes('leaked') || msg.includes('blocked')) {
+            return res.status(401).json({ 
+                error: 'Invalid API Key', 
+                message: 'La clave API de Gemini ha sido bloqueada o filtrada. Genera una nueva en Google AI Studio.' 
+            });
         }
 
         res.status(500).json({ error: 'Error interno del servidor de IA.' });

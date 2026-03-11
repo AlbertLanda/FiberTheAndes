@@ -62,11 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper para conectar al servidor de Node pase lo que pase
     const getApiUrl = (path) => {
-        // Si estamos en un dominio real o servidor propio, el path relativo "/" es lo mejor.
-        // Solo usamos localhost:3000 si abres el HTML como archivo local (file://)
-        if (window.location.protocol === 'file:') {
+        const isMainServer = window.location.port === '3000';
+        const isLocalFile = window.location.protocol === 'file:';
+        
+        // Si no estamos en el puerto 3000 (ej. estamos en el 8080) 
+        // o es un archivo local, forzamos localhost:3000
+        if (isLocalFile || (!isMainServer && window.location.hostname === 'localhost')) {
             return 'http://localhost:3000' + path;
         }
+        // En producción (dominio real), el path relativo "/" es lo correcto
         return path;
     };
 
