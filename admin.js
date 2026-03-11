@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadComplaints = async () => {
             let tickets = [];
             try {
-                const res = await fetch(getApiUrl('/api/tickets'));
+                const res = await fetch(getApiUrl('/tickets-manager'));
                 if (res.ok) {
                     tickets = await res.json();
                 } else {
@@ -87,7 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch(e) { 
                 console.error('Error cargando tickets:', e); 
-                ticketsList.innerHTML = '<p class="error-msg" style="color:red; text-align:center; padding:20px;">⚠️ El servidor de base de datos no está corriendo. Inícialo con "node backend/server.js"</p>';
+                ticketsList.innerHTML = `
+                    <p class="error-msg" style="color:red; text-align:center; padding:20px;">
+                        ⚠️ No se pudo conectar con el servidor.<br>
+                        <small>Verifica que AdBlock o Brave no estén bloqueando la conexión a localhost.</small>
+                    </p>`;
                 return;
             }
 
@@ -282,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const resolveTicket = async (id) => {
             if(confirm('¿Seguro que deseas marcar este ticket como Resuelto?')) {
                 try {
-                    await fetch(getApiUrl(`/api/tickets/${id}`), {
+                    await fetch(getApiUrl(`/tickets-manager/${id}`), {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: 'resuelto' })
@@ -295,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const processTicket = async (id) => {
             if(confirm('¿Marcar este ticket como "En Proceso"? (Avisar a equipo técnico)')) {
                 try {
-                    await fetch(getApiUrl(`/api/tickets/${id}`), {
+                    await fetch(getApiUrl(`/tickets-manager/${id}`), {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: 'proceso' })

@@ -81,7 +81,7 @@ FINALIZACIÓN FORMATO JSON: Cuando tengas los datos mínimos, incluye EXACTAMENT
 `.trim();
 
 // Chat Endpoint
-app.post('/api/chat', async (req, res) => {
+app.post('/chat-handler', async (req, res) => {
     try {
         const { messages, userText } = req.body;
         
@@ -128,7 +128,7 @@ app.post('/api/chat', async (req, res) => {
 // ==========================================
 
 // Leer tickets
-app.get('/api/tickets', (req, res) => {
+app.get('/tickets-manager', (req, res) => {
     try {
         const data = fs.readFileSync(ticketsPath, 'utf8');
         res.json(JSON.parse(data));
@@ -138,7 +138,7 @@ app.get('/api/tickets', (req, res) => {
 });
 
 // Crear nuevo ticket
-app.post('/api/tickets', (req, res) => {
+app.post('/tickets-manager', (req, res) => {
     try {
         const newTicket = req.body;
         const data = fs.readFileSync(ticketsPath, 'utf8');
@@ -173,7 +173,7 @@ DETALLE: ${tObj.problema || 'Sin detalle'}
 });
 
 // Actualizar estado de ticket
-app.put('/api/tickets/:id', (req, res) => {
+app.put('/tickets-manager/:id', (req, res) => {
     try {
         const ticketId = parseInt(req.params.id);
         const { status, atendido } = req.body;
@@ -211,7 +211,7 @@ app.put('/api/tickets/:id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`🤖 Backend IA corriendo en http://localhost:${PORT}`);
-    console.log(`💬 Endpoint habilitado: http://localhost:${PORT}/api/chat`);
-    console.log(`🎫 Base de datos de tickets activa en ${ticketsPath}`);
+    console.log(`🤖 Servidor FTA corriendo en http://localhost:${PORT}`);
+    console.log(`💬 Chat: http://localhost:${PORT}/chat-handler`);
+    console.log(`🎫 Tickets: http://localhost:${PORT}/tickets-manager`);
 });

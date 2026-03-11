@@ -158,7 +158,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                     status: 'pendiente'
                 };
                 
-                await fetch(getApiUrl('/api/tickets'), {
+                await fetch(getApiUrl('/tickets-manager'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(ticketData)
@@ -181,7 +181,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
 
     const callGemini = async (userText) => {
         // En lugar de llamar a la URL de Google, llamamos a nuestro propio servidor local
-        const BACKEND_URL = getApiUrl('/api/chat');
+        const BACKEND_URL = getApiUrl('/chat-handler');
 
         const body = {
             messages: history, // Enviamos el historial completo para que el backend lo organice
@@ -325,7 +325,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                 };
                 
                 try {
-                    const res = await fetch(getApiUrl('/api/tickets'), {
+                    const res = await fetch(getApiUrl('/tickets-manager'), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(ticketData)
