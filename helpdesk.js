@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div id="helpdesk-typing" class="helpdesk-typing hidden">
                     <span></span><span></span><span></span>
                 </div>
+                <div id="helpdesk-options" class="helpdesk-options hidden" style="padding: 10px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;">
+                </div>
                 <div id="helpdesk-input-area">
                     <input type="text" id="helpdesk-input" placeholder="Escribe tu mensaje..." autocomplete="off">
                     <button id="helpdesk-send"><i class="fas fa-paper-plane"></i></button>
@@ -169,11 +171,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
             if (aiCache[lowerTxt]) {
                 return aiCache[lowerTxt] + "\n\n*(Respuesta recuperada del caché ya que los servidores están ocupados)*";
             }
-            if (lowerTxt.includes('reportar') || lowerTxt.includes('problema') || lowerTxt.includes('falla') || lowerTxt.includes('queja')) {
-                sessionStorage.setItem('ftc_manual_ticket_mode', 'true');
-                return "Mi cerebro de IA está un poco saturado ahora mismo 😅. Pero no te preocupes, **puedo registrar tu ticket manualmente**. \n\nPor favor, escribe en un solo mensaje tu **Nombre, DNI, Dirección y Número de contacto**, junto con un breve resumen del problema, e ingresaré el ticket al sistema.";
-            }
-            return 'Uf, estamos recibiendo muchos mensajes ahora mismo y mi servidor está saturado. 😅 Por favor, espera unos minutos y vuelve a escribirme, o contáctanos al **01 7410392**.';
+            return '__SHOW_OPTIONS__';
         };
 
         try {
@@ -241,12 +239,13 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
         // Check if we are in manual fallback ticket mode
         if (sessionStorage.getItem('ftc_manual_ticket_mode') === 'true') {
             showTyping(false);
+            const fallbackTipo = sessionStorage.getItem('ftc_manual_ticket_type') || 'Falla Técnica';
             const ticketData = {
                 id: Date.now(),
                 sessionId,
                 timestamp: new Date().toISOString(),
                 data: {
-                    tipo: "Falla Técnica (Manual)",
+                    tipo: fallbackTipo + " (Manual)",
                     problema: userText,
                     nombre: "Clte. Respaldo Manual",
                     dni: "Revisar mensaje",
@@ -279,7 +278,32 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
 
         const botReply = await callGemini(userText);
         showTyping(false);
-        addMessage(botReply, 'bot');
+        
+        if (botReply === '__SHOW_OPTIONS__') {
+            const msg = "Mi sistema de Inteligencia Artificial está en mantenimiento temporal 😅. Pero no te preocupes, **puedo registrar tu solicitud manualmente**.\n\nPor favor, selecciona qué deseas hacer:";
+            addMessage(msg, 'bot');
+            
+            const optionsEl = document.getElementById('helpdesk-options');
+            optionsEl.innerHTML = `
+                <button class="fallback-btn" data-type="Falla Técnica" style="flex:1; padding:8px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="fas fa-tools"></i> Falla Técnica</button>
+                <button class="fallback-btn" data-type="Queja Comercial" style="flex:1; padding:8px; background:#f39c12; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="fas fa-angry"></i> Queja</button>
+                <button class="fallback-btn" data-type="Sugerencia" style="flex:1; padding:8px; background:#2ecc71; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="fas fa-lightbulb"></i> Sugerencia</button>
+            `;
+            optionsEl.classList.remove('hidden');
+            
+            optionsEl.querySelectorAll('.fallback-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const tipo = e.target.closest('button').getAttribute('data-type');
+                    optionsEl.classList.add('hidden');
+                    sessionStorage.setItem('ftc_manual_ticket_mode', 'true');
+                    sessionStorage.setItem('ftc_manual_ticket_type', tipo);
+                    addMessage(tipo, 'user');
+                    addMessage(`Has seleccionado **${tipo}**.\n\nPor favor, escribe en un SOLO y extenso mensaje tu:\n- **Nombre**\n- **DNI o RUC**\n- **Dirección**\n- **Celular de contacto**\n- Y el **detalle** de tu requerimiento.\n\nAutomáticamente generaremos el caso para nuestro equipo.`, 'bot');
+                });
+            });
+        } else {
+            addMessage(botReply, 'bot');
+        }
 
         inputField.disabled = false;
         sendBtn.disabled = false;
