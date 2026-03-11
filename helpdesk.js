@@ -147,6 +147,8 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
     // ============================================================
     //  LLAMAR A GEMINI
     // ============================================================
+    let aiCache = JSON.parse(localStorage.getItem('ftc_ai_cache')) || {};
+
     const callGemini = async (userText) => {
         history.push({ role: 'user', parts: [{ text: userText }] });
 
@@ -154,6 +156,18 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
             system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
             contents: history,
             generationConfig: { temperature: 0.7, maxOutputTokens: 500 }
+        };
+
+        const checkCacheOrFallback = (userTxt) => {
+            const lowerTxt = userTxt.toLowerCase().trim();
+            if (aiCache[lowerTxt]) {
+                return aiCache[lowerTxt] + "\n\n*(Respuesta recuperada del caché ya que los servidores están ocupados)*";
+            }
+            if (lowerTxt.includes('reportar') || lowerTxt.includes('problema') || lowerTxt.includes('falla') || lowerTxt.includes('queja')) {
+                sessionStorage.setItem('ftc_manual_ticket_mode', 'true');
+                return "Mi cerebro de IA está un poco saturado ahora mismo 😅. Pero no te preocupes, **puedo registrar tu ticket manualmente**. \n\nPor favor, escribe en un solo mensaje tu **Nombre, DNI, Dirección y Número de contacto**, junto con un breve resumen del problema, e ingresaré el ticket al sistema.";
+            }
+            return 'Uf, estamos recibiendo muchos mensajes ahora mismo y mi servidor está saturado. 😅 Por favor, espera unos minutos y vuelve a escribirme, o contáctanos al **01 7410392**.';
         };
 
         try {
@@ -169,9 +183,9 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                 console.error('Gemini API Error:', errMsg, errJson);
                 history.pop();
                 
-                // Mensaje amigable para límite de cuota gratis
-                if (res.status === 429) {
-                    return 'Uf, estamos recibiendo muchos mensajes ahora mismo y mi servidor está saturado. 😅 Por favor, espera un minuto y vuelve a escribirme.';
+                // Si la Key fue bloqueada por Google (400) o está saturada (429/503), forzamos modo de Respaldo Manual
+                if (res.status === 429 || res.status === 503 || res.status === 400 || res.status === 403) {
+                    return checkCacheOrFallback(userText);
                 }
                 
                 return `Error al conectar (${errMsg}). Llámanos al **01 7410392**.`;
@@ -189,11 +203,21 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
             history.push({ role: 'model', parts: [{ text: rawText }] });
             localStorage.setItem(HIST_KEY, JSON.stringify(history));
 
-            return extractTicket(rawText);
+            // Parsear y guardar respuesta en caché si no contiene la recolección de tickets
+            const cleanText = extractTicket(rawText);
+            if (!rawText.includes('```ticket_data')) {
+                const lowerTxt = userText.toLowerCase().trim();
+                if (lowerTxt.length > 3) {
+                    aiCache[lowerTxt] = rawText;
+                    localStorage.setItem('ftc_ai_cache', JSON.stringify(aiCache));
+                }
+            }
+
+            return cleanText;
         } catch (e) {
             console.error('Error de red Gemini:', e);
             history.pop();
-            return 'No pude conectarme al asistente. Verifica tu internet o llámanos al **01 7410392**.';
+            return checkCacheOrFallback(userText);
         }
     };
 
@@ -207,6 +231,38 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
         inputField.disabled = true;
         sendBtn.disabled = true;
         showTyping(true);
+
+        // Check if we are in manual fallback ticket mode
+        if (sessionStorage.getItem('ftc_manual_ticket_mode') === 'true') {
+            showTyping(false);
+            const tickets = JSON.parse(localStorage.getItem('ftc_helpdesk_tickets')) || [];
+            tickets.push({
+                id: Date.now(),
+                sessionId,
+                timestamp: new Date().toISOString(),
+                data: {
+                    tipo: "Falla Técnica (Manual)",
+                    problema: userText,
+                    nombre: "Clte. Respaldo Manual",
+                    dni: "Revisar mensaje",
+                    servicio: "No especificado",
+                    tiempo: "N/A",
+                    conexion: "N/A",
+                    reinicio: "N/A",
+                    ubicacion: "Revisar mensaje",
+                    contacto: "Revisar mensaje"
+                },
+                status: 'pendiente'
+            });
+            localStorage.setItem('ftc_helpdesk_tickets', JSON.stringify(tickets));
+            sessionStorage.removeItem('ftc_manual_ticket_mode');
+            
+            addMessage("¡Listo! He registrado tu caso en nuestro panel principal utilizando el sistema de respaldo. Un técnico revisará tus datos pronto.", 'bot');
+            inputField.disabled = false;
+            sendBtn.disabled = false;
+            inputField.focus();
+            return;
+        }
 
         const botReply = await callGemini(userText);
         showTyping(false);
