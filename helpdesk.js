@@ -361,6 +361,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                 btn.addEventListener('click', (e) => {
                     const tipo = e.target.closest('button').getAttribute('data-type');
                     optionsEl.classList.add('hidden');
+                    optionsEl.innerHTML = ''; // Elimina los botones completamente
                     
                     if (tipo === 'Info') {
                         addMessage('Saber más sobre Fiber The Andes', 'user');

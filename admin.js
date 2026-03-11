@@ -178,6 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="ticket-body" style="font-size: 0.85rem; line-height: 1.5; color:#444;">
                             <div class="ticket-info" style="display:grid; grid-template-columns: 1fr; gap:5px; margin-bottom:10px;">
+                                <p style="margin:2px 0;"><strong><i class="fas fa-user-cog"></i> Atendido por:</strong> ${data.atendido || '<span style="color:#aaa;">Sin asignar</span>'} <button class="btn-assign" data-id="${ticket.id}" style="margin-left:5px; padding:2px 6px; font-size:10px; cursor:pointer; background:#34495e; color:white; border:none; border-radius:3px;"><i class="fas fa-edit"></i> Asignar</button></p>
+                                <hr style="border:0; border-top:1px solid #eee; margin:5px 0;">
                                 <p style="margin:2px 0;"><strong><i class="fas fa-user"></i> Cliente:</strong> ${data.nombre || 'No registrado'} ${historyBadge}</p>
                                 <p style="margin:2px 0;"><strong><i class="fas fa-id-card"></i> DNI/RUC:</strong> ${data.dni || 'No registrado'}</p>
                                 <p style="margin:2px 0;"><strong><i class="fas fa-phone"></i> Contacto:</strong> ${data.contacto || 'No registrado'}</p>
@@ -236,6 +238,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     processTicket(id);
                 });
             });
+
+            // Añadir listeners a los botones de asignar
+            document.querySelectorAll('.btn-assign').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.target.closest('button').getAttribute('data-id'));
+                    assignTicket(id);
+                });
+            });
+        };
+
+        const assignTicket = async (id) => {
+            const attendant = prompt('¿Quién atenderá este caso? (Ej. Ing. Juan Pérez, Soporte María)');
+            if(attendant !== null && attendant.trim().length > 0) {
+                try {
+                    await fetch(`http://localhost:3000/api/tickets/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ atendido: attendant.trim() })
+                    });
+                    loadComplaints();
+                } catch(e) { console.error(e); }
+            }
         };
 
         const resolveTicket = async (id) => {

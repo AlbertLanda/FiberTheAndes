@@ -154,14 +154,19 @@ app.post('/api/tickets', (req, res) => {
 app.put('/api/tickets/:id', (req, res) => {
     try {
         const ticketId = parseInt(req.params.id);
-        const { status } = req.body;
+        const { status, atendido } = req.body;
         
         const data = fs.readFileSync(ticketsPath, 'utf8');
         const tickets = JSON.parse(data);
         
         const index = tickets.findIndex(t => t.id === ticketId);
         if (index !== -1) {
-            tickets[index].status = status;
+            if (status) tickets[index].status = status;
+            if (atendido) {
+                if (!tickets[index].data) tickets[index].data = {};
+                tickets[index].data.atendido = atendido;
+            }
+            
             fs.writeFileSync(ticketsPath, JSON.stringify(tickets, null, 2));
             res.json({ success: true, ticket: tickets[index] });
         } else {
