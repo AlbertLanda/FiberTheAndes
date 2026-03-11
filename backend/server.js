@@ -183,13 +183,24 @@ app.put('/api/tickets/:id', (req, res) => {
         
         const index = tickets.findIndex(t => t.id === ticketId);
         if (index !== -1) {
-            if (status) tickets[index].status = status;
+            let changeLog = `[ID: ${ticketId}] `;
+            
+            if (status) {
+                tickets[index].status = status;
+                changeLog += `Estado cambiado a: ${status.toUpperCase()} | `;
+            }
             if (atendido) {
                 if (!tickets[index].data) tickets[index].data = {};
                 tickets[index].data.atendido = atendido;
+                changeLog += `Asignado a: ${atendido} | `;
             }
             
             fs.writeFileSync(ticketsPath, JSON.stringify(tickets, null, 2));
+            
+            // Log the change in TXT
+            const logEntry = `ACTUALIZACIÓN - FECHA: ${new Date().toLocaleString()} - ${changeLog}\n`;
+            fs.appendFileSync(ticketsTxtPath, logEntry);
+
             res.json({ success: true, ticket: tickets[index] });
         } else {
             res.status(404).json({ error: 'Ticket no encontrado' });
