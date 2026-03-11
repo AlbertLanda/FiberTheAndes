@@ -11,10 +11,17 @@ document.addEventListener('DOMContentLoaded', () => {
     //  WIDGET HTML
     // ============================================================
     const helpdeskHTML = `
+        <div id="helpdesk-bubble" class="helpdesk-bubble">
+            <i class="fas fa-comment-dots"></i>
+            <span class="helpdesk-bubble-badge" id="helpdesk-badge" style="display:none;">1</span>
+        </div>
         <div id="helpdesk-widget" class="helpdesk-closed">
             <div id="helpdesk-header">
-                <span><i class="fas fa-headset" style="margin-right:8px;"></i> Soporte / Quejas</span>
-                <button id="helpdesk-toggle-btn"><i class="fas fa-chevron-up"></i></button>
+                <div style="display: flex; align-items: center;">
+                    <img src="img/LOGO FTA.png" alt="FTA" style="height: 24px; margin-right: 10px; border-radius: 50%; background: white; padding: 2px;">
+                    <span>Soporte IA</span>
+                </div>
+                <button id="helpdesk-close-btn"><i class="fas fa-times"></i></button>
             </div>
             <div id="helpdesk-body">
                 <div id="helpdesk-messages"></div>
@@ -34,7 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const widget          = document.getElementById('helpdesk-widget');
     const header          = document.getElementById('helpdesk-header');
-    const toggleBtn       = document.getElementById('helpdesk-toggle-btn');
+    const bubble          = document.getElementById('helpdesk-bubble');
+    const badge           = document.getElementById('helpdesk-badge');
+    const closeBtn        = document.getElementById('helpdesk-close-btn');
     const messagesEl      = document.getElementById('helpdesk-messages');
     const typingEl        = document.getElementById('helpdesk-typing');
     const inputField      = document.getElementById('helpdesk-input');
@@ -113,6 +122,11 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
         messages.push({ text, sender, ts: new Date().toISOString() });
         localStorage.setItem(MSG_KEY, JSON.stringify(messages));
         render();
+        
+        // Show notification badge if closed and bot messages
+        if (sender === 'bot' && widget.classList.contains('helpdesk-closed')) {
+            badge.style.display = 'block';
+        }
     };
 
     const showTyping = (show) => {
@@ -314,21 +328,32 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
     //  TOGGLE WIDGET
     // ============================================================
     const toggleWidget = () => {
-        widget.classList.toggle('helpdesk-closed');
-        const closed = widget.classList.contains('helpdesk-closed');
-        toggleBtn.querySelector('i').className = closed ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
-
-        if (!closed && messages.length === 0) {
-            // Primer mensaje automático del bot
-            const welcome = '¡Hola! 👋 Soy el asistente virtual de Fiber The Andes. Puedo ayudarte con reportes técnicos, consultas sobre nuestros servicios o lo que necesites. ¿En qué te puedo ayudar hoy?';
-            addMessage(welcome, 'bot');
-            history.push({ role: 'model', parts: [{ text: welcome }] });
-            localStorage.setItem(HIST_KEY, JSON.stringify(history));
+        const isClosed = widget.classList.contains('helpdesk-closed');
+        
+        if (isClosed) {
+            // Opening
+            widget.classList.remove('helpdesk-closed');
+            bubble.classList.add('hidden-bubble');
+            badge.style.display = 'none'; // clear badge
+            
+            if (messages.length === 0) {
+                // Primer mensaje automático del bot
+                const welcome = '¡Hola! 👋 Soy el asistente virtual de Fiber The Andes. Puedo ayudarte con reportes técnicos, consultas sobre nuestros servicios o lo que necesites. ¿En qué te puedo ayudar hoy?';
+                addMessage(welcome, 'bot');
+                history.push({ role: 'model', parts: [{ text: welcome }] });
+                localStorage.setItem(HIST_KEY, JSON.stringify(history));
+            }
+            setTimeout(() => inputField.focus(), 300);
+        } else {
+            // Closing
+            widget.classList.add('helpdesk-closed');
+            bubble.classList.remove('hidden-bubble');
         }
-        if (!closed) setTimeout(() => inputField.focus(), 300);
     };
 
-    header.addEventListener('click', toggleWidget);
+    bubble.addEventListener('click', toggleWidget);
+    closeBtn.addEventListener('click', toggleWidget);
+    
     sendBtn.addEventListener('click', (e) => { e.stopPropagation(); process(inputField.value.trim()).then(() => {}); inputField.value = ''; });
     inputField.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {

@@ -1,25 +1,73 @@
+/* BUBBLE */
+.helpdesk-bubble {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: #009FE3;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 28px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    z-index: 9999;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.helpdesk-bubble:hover {
+    transform: scale(1.1);
+}
+
+.helpdesk-bubble.hidden-bubble {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.5);
+}
+
+.helpdesk-bubble-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #e74c3c;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* WIDGET */
 #helpdesk-widget {
     position: fixed;
     bottom: 20px;
-    right: 80px; /* Para no solaparse con el botón de WhatsApp */
+    right: 20px; /* Igual que la burbuja */
     width: 350px;
+    height: 500px;
     background: #fff;
-    border-radius: 10px 10px 0 0;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
     font-family: 'Montserrat', sans-serif;
-    z-index: 9999;
-    transition: all 0.3s ease;
+    z-index: 10000;
+    transition: opacity 0.3s ease, transform 0.3s ease;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transform-origin: bottom right;
 }
 
 #helpdesk-widget.helpdesk-closed {
-    height: 50px;
-}
-
-#helpdesk-widget:not(.helpdesk-closed) {
-    height: 450px;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.1);
 }
 
 #helpdesk-header {
@@ -29,7 +77,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
     font-weight: 600;
 }
 
@@ -38,13 +85,19 @@
     border: none;
     color: white;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
+    transition: opacity 0.2s;
+}
+
+#helpdesk-header button:hover {
+    opacity: 0.8;
 }
 
 #helpdesk-body {
     display: flex;
     flex-direction: column;
-    height: calc(100% - 50px);
+    flex-grow: 1;
+    overflow: hidden;
 }
 
 #helpdesk-messages {
