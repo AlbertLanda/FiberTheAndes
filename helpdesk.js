@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     const helpdeskHTML = `
         <div id="helpdesk-bubble" class="helpdesk-bubble">
-            <i class="fas fa-comment-dots"></i>
+            <i class="fas fa-headset"></i>
             <span class="helpdesk-bubble-badge" id="helpdesk-badge" style="display:none;">1</span>
         </div>
         <div id="helpdesk-widget" class="helpdesk-closed">
@@ -68,8 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (protocol === 'file:') return 'http://localhost:3000' + path;
 
-        // Si estamos en un puerto raro (como 8080) y no es el principal (3000), 
-        // probablemente necesitamos apuntar explícitamente al 3000 en el mismo host
+        // Si estamos en localhost pero en el puerto de Python (8080), forzamos el 3000
+        if (host === 'localhost' || host === '127.0.0.1') {
+            if (port === '8080' || port === '') {
+                return `http://localhost:3000${path}`;
+            }
+        }
+        
+        // En dominios reales, permitimos que sea relativo si el puerto es estándar (80/443)
+        // Pero si el puerto no es el esperado, intentamos forzar el puerto 3000 en el mismo host
         if (port && port !== '3000' && port !== '80' && port !== '443') {
             return `${protocol}//${host}:3000${path}`;
         }

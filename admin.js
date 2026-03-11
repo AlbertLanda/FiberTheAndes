@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const host = window.location.hostname;
         const protocol = window.location.protocol;
         if (protocol === 'file:') return 'http://localhost:3000' + path;
+        if (host === 'localhost' || host === '127.0.0.1') {
+            if (port === '8080' || port === '') return `http://localhost:3000${path}`;
+        }
         if (port && port !== '3000' && port !== '80' && port !== '443') {
             return `${protocol}//${host}:3000${path}`;
         }
@@ -277,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const attendant = prompt('¿Quién atenderá este caso? (Ej. Ing. Juan Pérez, Soporte María)');
             if(attendant !== null && attendant.trim().length > 0) {
                 try {
-                    await fetch(getApiUrl(`/api/tickets/${id}`), {
+                    await fetch(getApiUrl(`/tickets-manager/${id}`), {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ atendido: attendant.trim() })

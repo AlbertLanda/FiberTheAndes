@@ -140,6 +140,15 @@ app.get('/tickets-manager', (req, res) => {
         res.status(500).json({ error: 'Error al leer tickets' });
     }
 });
+// Alias
+app.get('/api/tickets', (req, res) => {
+    try {
+        const data = fs.readFileSync(ticketsPath, 'utf8');
+        res.json(JSON.parse(data));
+    } catch(e) {
+        res.status(500).json({ error: 'Error al leer tickets' });
+    }
+});
 
 // Crear nuevo ticket
 app.post('/tickets-manager', (req, res) => {
@@ -178,6 +187,14 @@ DETALLE: ${tObj.problema || 'Sin detalle'}
 
 // Actualizar estado de ticket
 app.put('/tickets-manager/:id', (req, res) => {
+    processPut(req, res);
+});
+// Alias para compatibilidad
+app.put('/api/tickets/:id', (req, res) => {
+    processPut(req, res);
+});
+
+function processPut(req, res) {
     try {
         const ticketId = parseInt(req.params.id);
         const { status, atendido } = req.body;
@@ -212,7 +229,7 @@ app.put('/tickets-manager/:id', (req, res) => {
     } catch(e) {
         res.status(500).json({ error: 'Error al actualizar el ticket' });
     }
-});
+}
 
 app.listen(PORT, () => {
     console.log(`🤖 Servidor FTA corriendo en http://localhost:${PORT}`);
