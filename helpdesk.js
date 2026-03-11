@@ -250,40 +250,71 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
         sendBtn.disabled = true;
         showTyping(true);
 
-        // Check if we are in manual fallback ticket mode
-        if (sessionStorage.getItem('ftc_manual_ticket_mode') === 'true') {
+        // Check if we are in manual fallback ticket mode (collecting steps)
+        const manualStep = sessionStorage.getItem('ftc_manual_ticket_mode');
+        if (manualStep) {
             showTyping(false);
-            const fallbackTipo = sessionStorage.getItem('ftc_manual_ticket_type') || 'Falla Técnica';
-            const ticketData = {
-                id: Date.now(),
-                sessionId,
-                timestamp: new Date().toISOString(),
-                data: {
-                    tipo: fallbackTipo + " (Manual)",
-                    problema: userText,
-                    nombre: "Clte. Respaldo Manual",
-                    dni: "Revisar mensaje",
-                    servicio: "No especificado",
-                    tiempo: "N/A",
-                    conexion: "N/A",
-                    reinicio: "N/A",
-                    ubicacion: "Revisar mensaje",
-                    contacto: "Revisar mensaje"
-                },
-                status: 'pendiente'
-            };
+            let manualData = JSON.parse(sessionStorage.getItem('ftc_manual_data') || '{}');
             
-            try {
-                await fetch('http://localhost:3000/api/tickets', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(ticketData)
-                });
-            } catch(e) { console.error('Falló guardar ticket manual', e); }
+            if (manualStep === 'nombre') {
+                manualData.nombre = userText;
+                sessionStorage.setItem('ftc_manual_data', JSON.stringify(manualData));
+                sessionStorage.setItem('ftc_manual_ticket_mode', 'dni');
+                addMessage(`Gracias ${userText.split(' ')[0]}.\n2. ¿Cuál es tu **DNI o RUC**?`, 'bot');
+            } else if (manualStep === 'dni') {
+                manualData.dni = userText;
+                sessionStorage.setItem('ftc_manual_data', JSON.stringify(manualData));
+                sessionStorage.setItem('ftc_manual_ticket_mode', 'direccion');
+                addMessage(`Perfecto.\n3. ¿Cuál es tu **Dirección exacta** para revisar cobertura técnica?`, 'bot');
+            } else if (manualStep === 'direccion') {
+                manualData.direccion = userText;
+                sessionStorage.setItem('ftc_manual_data', JSON.stringify(manualData));
+                sessionStorage.setItem('ftc_manual_ticket_mode', 'telefono');
+                addMessage(`Anotado.\n4. ¿Cuál es tu **Número de celular o teléfono** de contacto?`, 'bot');
+            } else if (manualStep === 'telefono') {
+                manualData.telefono = userText;
+                sessionStorage.setItem('ftc_manual_data', JSON.stringify(manualData));
+                sessionStorage.setItem('ftc_manual_ticket_mode', 'detalle');
+                addMessage(`Por último.\n5. Por favor **detalla brevemente tu solicitud, problema o sugerencia**:`, 'bot');
+            } else if (manualStep === 'detalle') {
+                manualData.detalle = userText;
+                const fallbackTipo = sessionStorage.getItem('ftc_manual_ticket_type') || 'Falla Técnica';
+                
+                const ticketData = {
+                    id: Date.now(),
+                    sessionId,
+                    timestamp: new Date().toISOString(),
+                    data: {
+                        tipo: fallbackTipo + " (Manual)",
+                        problema: manualData.detalle,
+                        nombre: manualData.nombre,
+                        dni: manualData.dni,
+                        servicio: "No especificado",
+                        tiempo: "N/A",
+                        conexion: "N/A",
+                        reinicio: "N/A",
+                        ubicacion: manualData.direccion,
+                        contacto: manualData.telefono
+                    },
+                    status: 'pendiente'
+                };
+                
+                try {
+                    await fetch('http://localhost:3000/api/tickets', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(ticketData)
+                    });
+                } catch(e) { console.error('Falló guardar ticket manual', e); }
+                
+                // Clear state
+                sessionStorage.removeItem('ftc_manual_ticket_mode');
+                sessionStorage.removeItem('ftc_manual_ticket_type');
+                sessionStorage.removeItem('ftc_manual_data');
+                
+                addMessage("✅ ¡Completado! He ingresado tus datos y registrado tu caso formalmente en nuestro sistema. Uno de nuestros ingenieros o asesores se contactará contigo a la brevedad.", 'bot');
+            }
             
-            sessionStorage.removeItem('ftc_manual_ticket_mode');
-            
-            addMessage("¡Listo! He registrado tu caso en nuestro panel principal utilizando el sistema de respaldo. Un técnico revisará tus datos pronto.", 'bot');
             inputField.disabled = false;
             sendBtn.disabled = false;
             inputField.focus();
@@ -309,10 +340,13 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                 btn.addEventListener('click', (e) => {
                     const tipo = e.target.closest('button').getAttribute('data-type');
                     optionsEl.classList.add('hidden');
-                    sessionStorage.setItem('ftc_manual_ticket_mode', 'true');
+                    // Initiate step-by-step
+                    sessionStorage.setItem('ftc_manual_ticket_mode', 'nombre');
                     sessionStorage.setItem('ftc_manual_ticket_type', tipo);
+                    sessionStorage.setItem('ftc_manual_data', JSON.stringify({}));
+                    
                     addMessage(tipo, 'user');
-                    addMessage(`Has seleccionado **${tipo}**.\n\nPor favor, escribe en un SOLO y extenso mensaje tu:\n- **Nombre**\n- **DNI o RUC**\n- **Dirección**\n- **Celular de contacto**\n- Y el **detalle** de tu requerimiento.\n\nAutomáticamente generaremos el caso para nuestro equipo.`, 'bot');
+                    addMessage(`Has seleccionado **${tipo}**.\nCrearemos tu reporte paso a paso.\n\n1. Para empezar, ¿Cuál es tu **Nombre completo**?`, 'bot');
                 });
             });
         } else {
