@@ -165,9 +165,15 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
 
             if (!res.ok) {
                 const errJson = await res.json().catch(() => ({}));
-                const errMsg = errJson?.error?.message || `HTTP ${res.status}`;
+                let errMsg = errJson?.error?.message || `HTTP ${res.status}`;
                 console.error('Gemini API Error:', errMsg, errJson);
                 history.pop();
+                
+                // Mensaje amigable para límite de cuota gratis
+                if (res.status === 429) {
+                    return 'Uf, estamos recibiendo muchos mensajes ahora mismo y mi servidor está saturado. 😅 Por favor, espera un minuto y vuelve a escribirme.';
+                }
+                
                 return `Error al conectar (${errMsg}). Llámanos al **01 7410392**.`;
             }
 
