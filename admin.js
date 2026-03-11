@@ -71,8 +71,17 @@ document.addEventListener('DOMContentLoaded', () => {
             let tickets = [];
             try {
                 const res = await fetch('http://localhost:3000/api/tickets');
-                if (res.ok) tickets = await res.json();
-            } catch(e) { console.error('Error cargando tickets:', e); }
+                if (res.ok) {
+                    tickets = await res.json();
+                } else {
+                    ticketsList.innerHTML = '<p class="error-msg" style="color:red; text-align:center; padding:20px;">⚠️ Error de conexión con el servidor de tickets.</p>';
+                    return;
+                }
+            } catch(e) { 
+                console.error('Error cargando tickets:', e); 
+                ticketsList.innerHTML = '<p class="error-msg" style="color:red; text-align:center; padding:20px;">⚠️ El servidor de base de datos no está corriendo. Inícialo con "node backend/server.js"</p>';
+                return;
+            }
 
             const suggestionsList = document.getElementById('suggestions-list');
             

@@ -317,20 +317,25 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                 };
                 
                 try {
-                    await fetch('http://localhost:3000/api/tickets', {
+                    const res = await fetch('http://localhost:3000/api/tickets', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(ticketData)
                     });
-                } catch(e) { console.error('Falló guardar ticket manual', e); }
-                
-                // Clear state
-                sessionStorage.removeItem('ftc_manual_ticket_mode');
-                sessionStorage.removeItem('ftc_manual_ticket_type');
-                sessionStorage.removeItem('ftc_manual_data');
-                sessionStorage.removeItem('ftc_manual_ticket_steps');
-                
-                addMessage("✅ ¡Completado! He ingresado tus datos y registrado tu caso formalmente en nuestro panel. Uno de nuestros ingenieros o asesores se contactará contigo a la brevedad.", 'bot');
+                    
+                    if (!res.ok) throw new Error('Servidor no disponible');
+
+                    // Success - Clear state
+                    sessionStorage.removeItem('ftc_manual_ticket_mode');
+                    sessionStorage.removeItem('ftc_manual_ticket_type');
+                    sessionStorage.removeItem('ftc_manual_data');
+                    sessionStorage.removeItem('ftc_manual_ticket_steps');
+                    
+                    addMessage("✅ ¡Completado! He ingresado tus datos y registrado tu caso formalmente en nuestro panel. Uno de nuestros ingenieros o asesores se contactará contigo a la brevedad.", 'bot');
+                } catch(e) { 
+                    console.error('Falló guardar ticket manual', e); 
+                    addMessage("⚠️ Lo siento, parece que mi sistema de reportes no está respondiendo ahora mismo. Por favor, intenta de nuevo en unos minutos o llámanos directamente al **01 7410392**.", 'bot');
+                }
             }
             
             inputField.disabled = false;
