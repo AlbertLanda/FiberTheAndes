@@ -14,14 +14,14 @@ app.use(express.json());
 // Servir la carpeta raíz para que todo corra en el puerto 3000
 app.use(express.static(path.join(__dirname, '..')));
 
-// Archivos de datos
-const kbPath = path.join(__dirname, 'data', 'knowledge_base.txt');
-const ticketsPath = path.join(__dirname, 'data', 'tickets.json');
-const ticketsTxtPath = path.join(__dirname, 'data', 'tickets.txt');
+const conversationsPath = path.join(__dirname, 'data', 'conversations.json');
 
-// Inicializar archivo de tickets si no existe
+// Inicializar archivos de datos si no existen
 if (!fs.existsSync(ticketsPath)) {
     fs.writeFileSync(ticketsPath, JSON.stringify([]));
+}
+if (!fs.existsSync(conversationsPath)) {
+    fs.writeFileSync(conversationsPath, JSON.stringify([]));
 }
 
 let knowledgeBase = '';
@@ -34,7 +34,7 @@ try {
 
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // System prompt combining original rules and KB
 const SYSTEM_PROMPT = `
@@ -106,6 +106,37 @@ app.post(['/chat-handler', '/api/chat'], async (req, res) => {
         const result = await chatSession.sendMessage(userText);
         const responseText = result.response.text();
         
+        // --- Registro de Conversación ---
+        try {
+            const convData = fs.readFileSync(conversationsPath, 'utf8');
+            const conversations = JSON.parse(convData);
+            conversations.push({
+                timestamp: new Date().toISOString(),
+                userText,
+                responseText,
+                messages: messages // Historial opcional para contexto
+            });
+            fs.writeFileSync(conversationsPath, JSON.stringify(conversations.slice(-200), null, 2)); // Guardar últimas 200
+        } catch (e) {
+            console.error('Error al registrar conversación:', e);
+        }
+
+        // --- Extracción Proactiva de Ticket (Lado Servidor) ---
+        const ticketMatch = responseText.match(/```ticket_data\s*([\s\S]*?)```/);
+        if (ticketMatch) {
+            try {
+                const ticketJson = JSON.parse(ticketMatch[1].trim());
+                saveTicketInternal({
+                    id: Date.now(),
+                    timestamp: new Date().toISOString(),
+                    data: ticketJson,
+                    status: 'pendiente'
+                });
+            } catch (e) {
+                console.error('Error al extraer ticket en servidor:', e);
+            }
+        }
+        
         res.json({ text: responseText });
 
     } catch (error) {
@@ -145,19 +176,41 @@ app.get(['/tickets-manager', '/api/tickets'], (req, res) => {
 app.post(['/tickets-manager', '/api/tickets'], (req, res) => {
     try {
         const newTicket = req.body;
-        const data = fs.readFileSync(ticketsPath, 'utf8');
-        const tickets = JSON.parse(data);
-        
-        tickets.push(newTicket);
-        fs.writeFileSync(ticketsPath, JSON.stringify(tickets, null, 2));
-        
-        // --- Registro en TXT legible ---
-        const tObj = newTicket.data || {};
-        const logEntry = `
+        saveTicketInternal(newTicket);
+        res.status(201).json({ success: true, ticket: newTicket });
+    } catch(e) {
+        console.error('Error al guardar:', e);
+        res.status(500).json({ error: 'Error al guardar el ticket' });
+    }
+});
+
+// GET Conversations
+app.get('/api/conversations', (req, res) => {
+    try {
+        const data = fs.readFileSync(conversationsPath, 'utf8');
+        res.json(JSON.parse(data));
+    } catch(e) {
+        res.status(500).json({ error: 'Error al leer conversaciones' });
+    }
+});
+
+function saveTicketInternal(newTicket) {
+    const data = fs.readFileSync(ticketsPath, 'utf8');
+    const tickets = JSON.parse(data);
+    
+    // Evitar duplicados por ID si ya se guardó vía servidor
+    if (tickets.some(t => t.id === newTicket.id)) return;
+
+    tickets.push(newTicket);
+    fs.writeFileSync(ticketsPath, JSON.stringify(tickets, null, 2));
+    
+    // --- Registro en TXT legible ---
+    const tObj = newTicket.data || {};
+    const logEntry = `
 ========================================
 NUEVO REQUERIMIENTO (#${newTicket.id})
 FECHA: ${new Date(newTicket.timestamp).toLocaleString()}
-ESTADO: ${newTicket.status.toUpperCase()}
+ESTADO: ${newTicket.status ? newTicket.status.toUpperCase() : 'PENDIENTE'}
 TIPO: ${tObj.tipo}
 ----------------------------------------
 CLIENTE: ${tObj.nombre || 'N/A'}
@@ -167,14 +220,8 @@ UBICACIÓN: ${tObj.ubicacion || 'N/A'}
 DETALLE: ${tObj.problema || 'Sin detalle'}
 ========================================
 \n`;
-        fs.appendFileSync(ticketsTxtPath, logEntry);
-        
-        res.status(201).json({ success: true, ticket: newTicket });
-    } catch(e) {
-        console.error('Error al guardar:', e);
-        res.status(500).json({ error: 'Error al guardar el ticket' });
-    }
-});
+    fs.appendFileSync(ticketsTxtPath, logEntry);
+}
 
 // PUT Tickets (Status and Assignment)
 app.put(['/tickets-manager/:id', '/api/tickets/:id'], (req, res) => {

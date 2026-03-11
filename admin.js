@@ -319,10 +319,52 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        const loadConversations = async () => {
+            const convList = document.getElementById('conversations-list');
+            if (!convList) return;
+
+            try {
+                const res = await fetch(getApiUrl('/api/conversations'));
+                if (res.ok) {
+                    const conversations = await res.json();
+                    convList.innerHTML = '';
+                    if (conversations.length === 0) {
+                        convList.innerHTML = '<p class="empty-state">No hay mensajes registrados.</p>';
+                        return;
+                    }
+
+                    conversations.slice().reverse().forEach(c => {
+                        const date = new Date(c.timestamp).toLocaleString();
+                        const card = `
+                            <div class="ticket-card" style="border-left: 5px solid #3498db; background-color: #f8fbff; padding: 12px; margin-bottom: 10px; border-radius: 5px; font-size: 0.85rem;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:5px; color:#777; font-size:11px;">
+                                    <span><i class="fas fa-clock"></i> ${date}</span>
+                                </div>
+                                <div style="margin-bottom:8px;">
+                                    <strong style="color: #2980b9;">Usuario:</strong>
+                                    <p style="margin:4px 0;">${c.userText}</p>
+                                </div>
+                                <div>
+                                    <strong style="color: #16a085;">Bot:</strong>
+                                    <p style="margin:4px 0; font-style: italic; color: #555;">${c.responseText.substring(0, 150)}${c.responseText.length > 150 ? '...' : ''}</p>
+                                </div>
+                            </div>
+                        `;
+                        convList.insertAdjacentHTML('beforeend', card);
+                    });
+                }
+            } catch (e) {
+                console.error('Error cargando conversaciones:', e);
+            }
+        };
+
         // Listeners de filtros
         if(filterStatus) filterStatus.addEventListener('change', loadComplaints);
         if(filterType) filterType.addEventListener('change', loadComplaints);
 
         loadComplaints();
+        loadConversations();
+        // Polling para conversaciones nuevas cada 30 segundos
+        setInterval(loadConversations, 30000);
     }
 });
