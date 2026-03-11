@@ -60,6 +60,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const MSG_KEY  = `ftc_msgs_${sessionId}`;
     const HIST_KEY = `ftc_hist_${sessionId}`; // Historial para Gemini
 
+    // Helper para conectar al servidor de Node pase lo que pase
+    const getApiUrl = (path) => {
+        const isLocalFile = window.location.protocol === 'file:';
+        const isMainServer = window.location.port === '3000';
+        const base = (isLocalFile || !isMainServer) ? 'http://localhost:3000' : '';
+        return base + path;
+    };
+
     let messages = JSON.parse(localStorage.getItem(MSG_KEY))  || [];
     let history  = JSON.parse(localStorage.getItem(HIST_KEY)) || [];
 
@@ -150,7 +158,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                     status: 'pendiente'
                 };
                 
-                await fetch('http://localhost:3000/api/tickets', {
+                await fetch(getApiUrl('/api/tickets'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(ticketData)
@@ -173,7 +181,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
 
     const callGemini = async (userText) => {
         // En lugar de llamar a la URL de Google, llamamos a nuestro propio servidor local
-        const BACKEND_URL = 'http://localhost:3000/api/chat';
+        const BACKEND_URL = getApiUrl('/api/chat');
 
         const body = {
             messages: history, // Enviamos el historial completo para que el backend lo organice
@@ -317,7 +325,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                 };
                 
                 try {
-                    const res = await fetch('/api/tickets', {
+                    const res = await fetch(getApiUrl('/api/tickets'), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(ticketData)

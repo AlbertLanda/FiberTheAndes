@@ -7,6 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const ticketsList = document.getElementById('tickets-list');
     const totalTicketsEl = document.getElementById('total-tickets');
 
+    // Helper para conectar al servidor de Node pase lo que pase
+    const getApiUrl = (path) => {
+        const isLocalFile = window.location.protocol === 'file:';
+        const isMainServer = window.location.port === '3000';
+        const base = (isLocalFile || !isMainServer) ? 'http://localhost:3000' : '';
+        return base + path;
+    };
+
     // Credenciales hardcodeadas (Solo como demo en front-end)
     const ADMIN_USER = 'admin';
     const ADMIN_PASS = 'admin123';
@@ -70,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadComplaints = async () => {
             let tickets = [];
             try {
-                const res = await fetch('/api/tickets');
+                const res = await fetch(getApiUrl('/api/tickets'));
                 if (res.ok) {
                     tickets = await res.json();
                 } else {
@@ -261,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const attendant = prompt('¿Quién atenderá este caso? (Ej. Ing. Juan Pérez, Soporte María)');
             if(attendant !== null && attendant.trim().length > 0) {
                 try {
-                    await fetch(`/api/tickets/${id}`, {
+                    await fetch(getApiUrl(`/api/tickets/${id}`), {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ atendido: attendant.trim() })
@@ -274,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const resolveTicket = async (id) => {
             if(confirm('¿Seguro que deseas marcar este ticket como Resuelto?')) {
                 try {
-                    await fetch(`http://localhost:3000/api/tickets/${id}`, {
+                    await fetch(getApiUrl(`/api/tickets/${id}`), {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: 'resuelto' })
@@ -287,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const processTicket = async (id) => {
             if(confirm('¿Marcar este ticket como "En Proceso"? (Avisar a equipo técnico)')) {
                 try {
-                    await fetch(`http://localhost:3000/api/tickets/${id}`, {
+                    await fetch(getApiUrl(`/api/tickets/${id}`), {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: 'proceso' })
