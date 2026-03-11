@@ -62,16 +62,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper para conectar al servidor de Node pase lo que pase
     const getApiUrl = (path) => {
-        const isMainServer = window.location.port === '3000';
-        const isLocalFile = window.location.protocol === 'file:';
-        
-        // Si no estamos en el puerto 3000 (ej. estamos en el 8080) 
-        // o es un archivo local, forzamos localhost:3000
-        if (isLocalFile || (!isMainServer && window.location.hostname === 'localhost')) {
-            return 'http://localhost:3000' + path;
+        const port = window.location.port;
+        const host = window.location.hostname;
+        const protocol = window.location.protocol;
+
+        if (protocol === 'file:') return 'http://localhost:3000' + path;
+
+        // Si estamos en un puerto raro (como 8080) y no es el principal (3000), 
+        // probablemente necesitamos apuntar explícitamente al 3000 en el mismo host
+        if (port && port !== '3000' && port !== '80' && port !== '443') {
+            return `${protocol}//${host}:3000${path}`;
         }
-        // En producción (dominio real), el path relativo "/" es lo correcto
+        
         return path;
+    };
+
+    const resetChat = () => {
+        messages = [];
+        history = [];
+        localStorage.removeItem(MSG_KEY);
+        localStorage.removeItem(HIST_KEY);
+        
+        const welcome = '¡Hola! 👋 Soy el asistente virtual de Fiber The Andes. Tu reporte ha sido procesado. ¿En qué más puedo ayudarte hoy?';
+        addMessage(welcome, 'bot');
+        history.push({ role: 'model', parts: [{ text: welcome }] });
+        localStorage.setItem(HIST_KEY, JSON.stringify(history));
+        render();
     };
 
     let messages = JSON.parse(localStorage.getItem(MSG_KEY))  || [];
@@ -170,8 +186,10 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                     body: JSON.stringify(ticketData)
                 });
                 
-                // Devuelve el texto limpio (sin el bloque JSON)
-                return botText.replace(/```ticket_data[\s\S]*?```/g, '').trim();
+                // Devuelve el texto limpio (sin el bloque JSON) y reinicia
+                const clean = botText.replace(/```ticket_data[\s\S]*?```/g, '').trim();
+                setTimeout(resetChat, 3000); // Reset tras 3 segundos para que lea el mensaje final
+                return clean;
             } catch(e) {
                 console.error('Error guardando ticket:', e);
                 return botText;
@@ -346,6 +364,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                     sessionStorage.removeItem('ftc_manual_ticket_steps');
                     
                     addMessage("✅ ¡Completado! He ingresado tus datos y registrado tu caso formalmente en nuestro panel. Uno de nuestros ingenieros o asesores se contactará contigo a la brevedad.", 'bot');
+                    setTimeout(resetChat, 3000);
                 } catch(e) { 
                     console.error('Falló guardar ticket manual', e); 
                     addMessage("⚠️ Lo siento, parece que mi sistema de reportes no está respondiendo ahora mismo. Por favor, intenta de nuevo en unos minutos o llámanos directamente al **01 7410392**.", 'bot');

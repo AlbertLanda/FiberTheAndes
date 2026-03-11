@@ -9,10 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper para conectar al servidor de Node pase lo que pase
     const getApiUrl = (path) => {
-        const isMainServer = window.location.port === '3000';
-        const isLocalFile = window.location.protocol === 'file:';
-        if (isLocalFile || (!isMainServer && window.location.hostname === 'localhost')) {
-            return 'http://localhost:3000' + path;
+        const port = window.location.port;
+        const host = window.location.hostname;
+        const protocol = window.location.protocol;
+        if (protocol === 'file:') return 'http://localhost:3000' + path;
+        if (port && port !== '3000' && port !== '80' && port !== '443') {
+            return `${protocol}//${host}:3000${path}`;
         }
         return path;
     };
