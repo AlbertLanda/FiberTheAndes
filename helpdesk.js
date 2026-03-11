@@ -62,10 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper para conectar al servidor de Node pase lo que pase
     const getApiUrl = (path) => {
-        const isLocalFile = window.location.protocol === 'file:';
-        const isMainServer = window.location.port === '3000';
-        const base = (isLocalFile || !isMainServer) ? 'http://localhost:3000' : '';
-        return base + path;
+        // Si estamos en un dominio real o servidor propio, el path relativo "/" es lo mejor.
+        // Solo usamos localhost:3000 si abres el HTML como archivo local (file://)
+        if (window.location.protocol === 'file:') {
+            return 'http://localhost:3000' + path;
+        }
+        return path;
     };
 
     let messages = JSON.parse(localStorage.getItem(MSG_KEY))  || [];

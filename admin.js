@@ -9,10 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper para conectar al servidor de Node pase lo que pase
     const getApiUrl = (path) => {
-        const isLocalFile = window.location.protocol === 'file:';
-        const isMainServer = window.location.port === '3000';
-        const base = (isLocalFile || !isMainServer) ? 'http://localhost:3000' : '';
-        return base + path;
+        if (window.location.protocol === 'file:') {
+            return 'http://localhost:3000' + path;
+        }
+        return path;
     };
 
     // Credenciales hardcodeadas (Solo como demo en front-end)
