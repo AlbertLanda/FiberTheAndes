@@ -121,23 +121,29 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
     // ============================================================
     //  PARSEAR TICKET DEL MENSAJE DEL BOT
     // ============================================================
-    const extractTicket = (botText) => {
+    const extractTicket = async (botText) => {
         const match = botText.match(/```ticket_data\s*([\s\S]*?)```/);
         if (match) {
             try {
                 const data = JSON.parse(match[1].trim());
-                const tickets = JSON.parse(localStorage.getItem('ftc_helpdesk_tickets')) || [];
-                tickets.push({
+                const ticketData = {
                     id: Date.now(),
                     sessionId,
                     timestamp: new Date().toISOString(),
                     data,
                     status: 'pendiente'
+                };
+                
+                await fetch('http://localhost:3000/api/tickets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ticketData)
                 });
-                localStorage.setItem('ftc_helpdesk_tickets', JSON.stringify(tickets));
+                
                 // Devuelve el texto limpio (sin el bloque JSON)
                 return botText.replace(/```ticket_data[\s\S]*?```/g, '').trim();
             } catch(e) {
+                console.error('Error guardando ticket:', e);
                 return botText;
             }
         }
@@ -204,7 +210,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
             localStorage.setItem(HIST_KEY, JSON.stringify(history));
 
             // Parsear y guardar respuesta en caché si no contiene la recolección de tickets
-            const cleanText = extractTicket(rawText);
+            const cleanText = await extractTicket(rawText);
             if (!rawText.includes('```ticket_data')) {
                 const lowerTxt = userText.toLowerCase().trim();
                 if (lowerTxt.length > 3) {
@@ -235,8 +241,7 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
         // Check if we are in manual fallback ticket mode
         if (sessionStorage.getItem('ftc_manual_ticket_mode') === 'true') {
             showTyping(false);
-            const tickets = JSON.parse(localStorage.getItem('ftc_helpdesk_tickets')) || [];
-            tickets.push({
+            const ticketData = {
                 id: Date.now(),
                 sessionId,
                 timestamp: new Date().toISOString(),
@@ -253,8 +258,16 @@ FINALIZACIÓN: Cuando tengas los datos mínimos necesarios (tipo, detalle, nombr
                     contacto: "Revisar mensaje"
                 },
                 status: 'pendiente'
-            });
-            localStorage.setItem('ftc_helpdesk_tickets', JSON.stringify(tickets));
+            };
+            
+            try {
+                await fetch('http://localhost:3000/api/tickets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ticketData)
+                });
+            } catch(e) { console.error('Falló guardar ticket manual', e); }
+            
             sessionStorage.removeItem('ftc_manual_ticket_mode');
             
             addMessage("¡Listo! He registrado tu caso en nuestro panel principal utilizando el sistema de respaldo. Un técnico revisará tus datos pronto.", 'bot');

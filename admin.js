@@ -67,8 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // Pinta las quejas en la tabla (tarjetas de tickets)
-        const loadComplaints = () => {
-            let tickets = JSON.parse(localStorage.getItem('ftc_helpdesk_tickets')) || [];
+        const loadComplaints = async () => {
+            let tickets = [];
+            try {
+                const res = await fetch('http://localhost:3000/api/tickets');
+                if (res.ok) tickets = await res.json();
+            } catch(e) { console.error('Error cargando tickets:', e); }
+
             const suggestionsList = document.getElementById('suggestions-list');
             
             ticketsList.innerHTML = '';
@@ -233,27 +238,29 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
-        const resolveTicket = (id) => {
-            let tickets = JSON.parse(localStorage.getItem('ftc_helpdesk_tickets')) || [];
-            const index = tickets.findIndex(t => t.id === id);
-            if(index !== -1) {
-                if(confirm('¿Seguro que deseas marcar este ticket como Resuelto?')) {
-                    tickets[index].status = 'resuelto';
-                    localStorage.setItem('ftc_helpdesk_tickets', JSON.stringify(tickets));
+        const resolveTicket = async (id) => {
+            if(confirm('¿Seguro que deseas marcar este ticket como Resuelto?')) {
+                try {
+                    await fetch(`http://localhost:3000/api/tickets/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'resuelto' })
+                    });
                     loadComplaints();
-                }
+                } catch(e) { console.error(e); }
             }
         };
 
-        const processTicket = (id) => {
-            let tickets = JSON.parse(localStorage.getItem('ftc_helpdesk_tickets')) || [];
-            const index = tickets.findIndex(t => t.id === id);
-            if(index !== -1) {
-                if(confirm('¿Marcar este ticket como "En Proceso"? (Avisar a equipo técnico)')) {
-                    tickets[index].status = 'proceso';
-                    localStorage.setItem('ftc_helpdesk_tickets', JSON.stringify(tickets));
+        const processTicket = async (id) => {
+            if(confirm('¿Marcar este ticket como "En Proceso"? (Avisar a equipo técnico)')) {
+                try {
+                    await fetch(`http://localhost:3000/api/tickets/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'proceso' })
+                    });
                     loadComplaints();
-                }
+                } catch(e) { console.error(e); }
             }
         };
 
