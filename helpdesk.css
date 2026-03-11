@@ -1,8 +1,8 @@
 /* BUBBLE */
 .helpdesk-bubble {
     position: fixed;
-    bottom: 90px;
-    right: 20px;
+    bottom: 110px; /* Arriba del WhatsApp (40px + 60px + gap) */
+    right: 40px;
     width: 60px;
     height: 60px;
     background: #009FE3;
@@ -48,8 +48,8 @@
 /* WIDGET */
 #helpdesk-widget {
     position: fixed;
-    bottom: 90px;
-    right: 20px; /* Igual que la burbuja */
+    bottom: 110px;
+    right: 40px; /* Alineado con WhatsApp y la burbuja */
     width: 350px;
     height: 500px;
     background: #fff;
@@ -170,9 +170,13 @@
 }
 
 @media (max-width: 480px) {
+    .helpdesk-bubble {
+        bottom: 110px;
+        right: 20px;
+    }
     #helpdesk-widget {
         right: 10px;
-        bottom: 70px; /* encima de whatsapp en móviles */
+        bottom: 110px;
         width: calc(100% - 20px);
     }
 }
