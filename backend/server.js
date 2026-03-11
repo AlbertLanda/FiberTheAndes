@@ -11,10 +11,13 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+// Servir la carpeta raíz para que todo corra en el puerto 3000
+app.use(express.static(path.join(__dirname, '..')));
 
 // Archivos de datos
 const kbPath = path.join(__dirname, 'data', 'knowledge_base.txt');
 const ticketsPath = path.join(__dirname, 'data', 'tickets.json');
+const ticketsTxtPath = path.join(__dirname, 'data', 'tickets.txt');
 
 // Inicializar archivo de tickets si no existe
 if (!fs.existsSync(ticketsPath)) {
@@ -144,8 +147,27 @@ app.post('/api/tickets', (req, res) => {
         tickets.push(newTicket);
         fs.writeFileSync(ticketsPath, JSON.stringify(tickets, null, 2));
         
+        // --- Registro en TXT legible ---
+        const tObj = newTicket.data || {};
+        const logEntry = `
+========================================
+NUEVO REQUERIMIENTO (#${newTicket.id})
+FECHA: ${new Date(newTicket.timestamp).toLocaleString()}
+ESTADO: ${newTicket.status.toUpperCase()}
+TIPO: ${tObj.tipo}
+----------------------------------------
+CLIENTE: ${tObj.nombre || 'N/A'}
+DNI/RUC: ${tObj.dni || 'N/A'}
+CONTACTO: ${tObj.contacto || 'N/A'}
+UBICACIÓN: ${tObj.ubicacion || 'N/A'}
+DETALLE: ${tObj.problema || 'Sin detalle'}
+========================================
+\n`;
+        fs.appendFileSync(ticketsTxtPath, logEntry);
+        
         res.status(201).json({ success: true, ticket: newTicket });
     } catch(e) {
+        console.error('Error al guardar:', e);
         res.status(500).json({ error: 'Error al guardar el ticket' });
     }
 });

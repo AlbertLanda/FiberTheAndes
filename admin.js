@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadComplaints = async () => {
             let tickets = [];
             try {
-                const res = await fetch('http://localhost:3000/api/tickets');
+                const res = await fetch('/api/tickets');
                 if (res.ok) {
                     tickets = await res.json();
                 } else {
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const attendant = prompt('¿Quién atenderá este caso? (Ej. Ing. Juan Pérez, Soporte María)');
             if(attendant !== null && attendant.trim().length > 0) {
                 try {
-                    await fetch(`http://localhost:3000/api/tickets/${id}`, {
+                    await fetch(`/api/tickets/${id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ atendido: attendant.trim() })
