@@ -12,13 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const port = window.location.port;
         const host = window.location.hostname;
         const protocol = window.location.protocol;
+
         if (protocol === 'file:') return 'http://localhost:3000' + path;
-        if (host === 'localhost' || host === '127.0.0.1') {
-            if (port === '8080' || port === '') return `http://localhost:3000${path}`;
-        }
-        if (port && port !== '3000' && port !== '80' && port !== '443') {
+
+        const localHosts = ['localhost', '127.0.0.1', '0.0.0.0'];
+        const isIp = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(host);
+        
+        if ((localHosts.includes(host) || isIp) && port !== '3000') {
             return `${protocol}//${host}:3000${path}`;
         }
+        
         return path;
     };
 

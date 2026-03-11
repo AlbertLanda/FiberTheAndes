@@ -80,8 +80,8 @@ FINALIZACIÓN FORMATO JSON: Cuando tengas los datos mínimos, incluye EXACTAMENT
 \`\`\`
 `.trim();
 
-// Chat Endpoint
-app.post('/chat-handler', async (req, res) => {
+// Chat Endpoints (Multiple aliases for robustness)
+app.post(['/chat-handler', '/api/chat'], async (req, res) => {
     try {
         const { messages, userText } = req.body;
         
@@ -131,17 +131,8 @@ app.post('/chat-handler', async (req, res) => {
 // TICKET STORAGE API
 // ==========================================
 
-// Leer tickets
-app.get('/tickets-manager', (req, res) => {
-    try {
-        const data = fs.readFileSync(ticketsPath, 'utf8');
-        res.json(JSON.parse(data));
-    } catch(e) {
-        res.status(500).json({ error: 'Error al leer tickets' });
-    }
-});
-// Alias
-app.get('/api/tickets', (req, res) => {
+// GET Tickets (Unified and aliased)
+app.get(['/tickets-manager', '/api/tickets'], (req, res) => {
     try {
         const data = fs.readFileSync(ticketsPath, 'utf8');
         res.json(JSON.parse(data));
@@ -150,8 +141,8 @@ app.get('/api/tickets', (req, res) => {
     }
 });
 
-// Crear nuevo ticket
-app.post('/tickets-manager', (req, res) => {
+// POST Tickets
+app.post(['/tickets-manager', '/api/tickets'], (req, res) => {
     try {
         const newTicket = req.body;
         const data = fs.readFileSync(ticketsPath, 'utf8');
@@ -185,8 +176,8 @@ DETALLE: ${tObj.problema || 'Sin detalle'}
     }
 });
 
-// Actualizar estado de ticket
-app.put('/tickets-manager/:id', (req, res) => {
+// PUT Tickets (Status and Assignment)
+app.put(['/tickets-manager/:id', '/api/tickets/:id'], (req, res) => {
     processPut(req, res);
 });
 // Alias para compatibilidad
