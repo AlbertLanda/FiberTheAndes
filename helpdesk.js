@@ -1,13 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ============================================================
-    // BOTÓN REDIRECCIÓN A HELPDESK AZURE (TEXTO A LA IZQ + AUTO-OCULTADO)
+    // BOTÓN REDIRECCIÓN A HELPDESK AZURE (SECUENCIA AUTOMÁTICA)
     // ============================================================
     
-    // Inyectamos la burbuja arrancando en modo "expanded" (expandido)
-    // Fíjate que ahora el <span> está ANTES que el <i>
+    // 1. Inyectamos la burbuja arrancando en modo "collapsed" (Bolita inicial)
     const helpdeskHTML = `
-        <div id="helpdesk-bubble" class="helpdesk-bubble expanded" style="cursor: pointer;">
+        <div id="helpdesk-bubble" class="helpdesk-bubble collapsed" style="cursor: pointer;">
             <span class="helpdesk-text">Soporte Técnico</span>
             <i class="fas fa-headset"></i>
         </div>
@@ -18,15 +17,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const bubble = document.getElementById('helpdesk-bubble');
 
     if (bubble) {
-        // Temporizador: A los 4000 milisegundos (4 segundos), le cambiamos la clase para que se encoja
+        // 2. Esperamos 1 segundo (1000ms) para que el usuario vea la bolita, y luego la EXPANDIMOS
         setTimeout(() => {
-            bubble.classList.remove('expanded');
-            bubble.classList.add('collapsed');
-        }, 4000);
+            bubble.classList.remove('collapsed');
+            bubble.classList.add('expanded');
+            
+            // 3. Una vez expandida, esperamos 4 segundos (4000ms) y la VOLVEMOS A CERRAR (Bolita final)
+            setTimeout(() => {
+                bubble.classList.remove('expanded');
+                bubble.classList.add('collapsed');
+            }, 4000);
+            
+        }, 1000);
 
-        // Evento click: Ir a la URL
+        // Evento click: Ir a la URL de Azure
         bubble.addEventListener('click', (e) => {
-            e.preventDefault(); // Previene cualquier otro comportamiento por defecto
+            e.preventDefault(); // Evitamos cualquier otro comportamiento por defecto
             window.location.href = 'https://app-helpdesk-fiberandes-cyawehc4h9gadcbb.centralus-01.azurewebsites.net/login/';
         });
     }
