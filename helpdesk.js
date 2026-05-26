@@ -1,13 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ============================================================
-    // BOTÓN REDIRECCIÓN A HELPDESK AZURE (VERSIÓN LIMPIA)
+    // BOTÓN REDIRECCIÓN A HELPDESK AZURE (CON TEXTO)
     // ============================================================
     
-    // Inyectamos ÚNICAMENTE la burbuja, sin el resto de la ventana del chat
+    // Inyectamos la burbuja con el icono y el nuevo texto
     const helpdeskHTML = `
         <div id="helpdesk-bubble" class="helpdesk-bubble" style="cursor: pointer;">
             <i class="fas fa-headset"></i>
+            <span class="helpdesk-text">Soporte Técnico</span>
         </div>
     `;
     
