@@ -3,15 +3,17 @@
     position: fixed;
     bottom: 110px; /* Arriba del WhatsApp (40px + 60px + gap) */
     right: 40px;
-    width: 60px;
+    width: auto; /* Cambiado a auto para que se adapte al texto */
+    padding: 0 20px; /* Espacio horizontal para que el texto respire */
+    gap: 10px; /* Separación entre el icono y el texto */
     height: 60px;
     background: #009FE3;
-    border-radius: 50%;
+    border-radius: 30px; /* Forma de pastilla (la mitad de los 60px de height) */
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 28px;
+    font-size: 24px; /* Icono ligeramente más pequeño para equilibrar con el texto */
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     cursor: pointer;
     z-index: 9999;
@@ -19,13 +21,21 @@
 }
 
 .helpdesk-bubble:hover {
-    transform: scale(1.1);
+    transform: scale(1.05); /* Escala menor para que el botón ovalado no crezca exageradamente */
 }
 
 .helpdesk-bubble.hidden-bubble {
     opacity: 0;
     pointer-events: none;
     transform: scale(0.5);
+}
+
+/* NUEVO: Estilo para el texto dentro de la burbuja */
+.helpdesk-text {
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif; /* Usando la fuente de tu diseño */
+    white-space: nowrap; /* Evita que el texto baje a una segunda línea */
 }
 
 .helpdesk-bubble-badge {
@@ -173,6 +183,12 @@
     .helpdesk-bubble {
         bottom: 110px;
         right: 20px;
+        padding: 0 15px; /* Ajuste para celular */
+        height: 50px;
+        font-size: 20px;
+    }
+    .helpdesk-text {
+        font-size: 14px; /* Texto más pequeño en móvil */
     }
     #helpdesk-widget {
         right: 10px;
@@ -210,4 +226,3 @@
     0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
     30% { transform: translateY(-6px); opacity: 1; }
 }
-
