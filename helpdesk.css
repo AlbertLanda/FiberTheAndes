@@ -3,25 +3,37 @@
     position: fixed;
     bottom: 110px; /* Arriba del WhatsApp (40px + 60px + gap) */
     right: 40px;
-    width: auto; /* Cambiado a auto para que se adapte al texto */
-    padding: 0 20px; /* Espacio horizontal para que el texto respire */
-    gap: 10px; /* Separación entre el icono y el texto */
     height: 60px;
     background: #009FE3;
-    border-radius: 30px; /* Forma de pastilla (la mitad de los 60px de height) */
+    border-radius: 30px; /* Forma de pastilla */
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 24px; /* Icono ligeramente más pequeño para equilibrar con el texto */
+    font-size: 24px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     cursor: pointer;
     z-index: 9999;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    overflow: hidden; /* IMPORTANTE: Oculta el texto cuando se encoge */
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Estado 1: Burbuja abierta con texto */
+.helpdesk-bubble.expanded {
+    width: auto;
+    padding: 0 20px;
+    gap: 10px;
+}
+
+/* Estado 2: Burbuja cerrada (bolita normal) */
+.helpdesk-bubble.collapsed {
+    width: 60px;
+    padding: 0;
+    gap: 0;
 }
 
 .helpdesk-bubble:hover {
-    transform: scale(1.05); /* Escala menor para que el botón ovalado no crezca exageradamente */
+    transform: scale(1.05);
 }
 
 .helpdesk-bubble.hidden-bubble {
@@ -30,12 +42,26 @@
     transform: scale(0.5);
 }
 
-/* NUEVO: Estilo para el texto dentro de la burbuja */
+/* TEXTO DE LA BURBUJA */
 .helpdesk-text {
     font-size: 16px;
     font-weight: 600;
-    font-family: 'Montserrat', sans-serif; /* Usando la fuente de tu diseño */
-    white-space: nowrap; /* Evita que el texto baje a una segunda línea */
+    font-family: 'Montserrat', sans-serif;
+    white-space: nowrap;
+    transition: opacity 0.3s ease, max-width 0.5s ease;
+}
+
+/* Cuando está expandido, mostramos el texto */
+.helpdesk-bubble.expanded .helpdesk-text {
+    max-width: 150px;
+    opacity: 1;
+}
+
+/* Cuando colapsa a bolita, escondemos el texto */
+.helpdesk-bubble.collapsed .helpdesk-text {
+    max-width: 0;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .helpdesk-bubble-badge {
@@ -55,11 +81,11 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* WIDGET */
+/* WIDGET (Oculto, pero lo mantenemos por si acaso) */
 #helpdesk-widget {
     position: fixed;
     bottom: 110px;
-    right: 40px; /* Alineado con WhatsApp y la burbuja */
+    right: 40px;
     width: 350px;
     height: 500px;
     background: #fff;
@@ -183,12 +209,17 @@
     .helpdesk-bubble {
         bottom: 110px;
         right: 20px;
-        padding: 0 15px; /* Ajuste para celular */
         height: 50px;
         font-size: 20px;
     }
+    .helpdesk-bubble.expanded {
+        padding: 0 15px;
+    }
+    .helpdesk-bubble.collapsed {
+        width: 50px; /* Para que quede bolita perfecta en móvil */
+    }
     .helpdesk-text {
-        font-size: 14px; /* Texto más pequeño en móvil */
+        font-size: 14px;
     }
     #helpdesk-widget {
         right: 10px;
